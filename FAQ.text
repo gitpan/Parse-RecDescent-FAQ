@@ -124,6 +124,14 @@ COLUMN-ORIENTED PROCESSING
            line: word '' { $thiscolumn == 22 || undef } word 
 
 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
+  Parsing sentences to generate sentences
+
+    In this column, Randal shows how to read text to generate more text. He
+    parses sentences to make Parse::RecDescent parse trees which he then
+    re-walks with random weightings to create new sentences.
+
+     http://www.stonehenge.com/merlyn/LinuxMag/col04.html
+
   Calling a parser within a grammar
 
     I have a script that uses Parse::RecDescent, in which I want to define 2
@@ -447,6 +455,18 @@ a particular subrule
     To get each value for the number subrule, you have a couple of choices,
     both documented in the Parse::RecDescent manpage under `@item and
     %item'.
+
+  use <rulevar: local $x> not <rulevar: $x>
+
+    If you say:
+
+            somerule: <rulevar: $x>
+
+    you get a lexical $x within the rule (only). If you say:
+
+            somerule: <rulevar: local $x>
+
+    you get a localized $x within the rule (and any subrules it calls).
 
   Don't use $::RD_AUTOACTION to print while you are parsing
 

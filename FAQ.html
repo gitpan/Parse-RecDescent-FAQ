@@ -40,6 +40,9 @@
 
 </A></LI>
 <UL>
+<LI><A HREF="#Parsing%20sentences%20to%20generate%20sentences">Parsing sentences to generate sentences
+
+</A></LI>
 <LI><A HREF="#Calling%20a%20parser%20within%20a%20grammar">Calling a parser within a grammar
 
 </A></LI>
@@ -96,6 +99,9 @@ CSV-like data
 </A></LI>
 <LI><A HREF="#Do%20not%20assume%20that%20%25item%20contains%20an%20array%20ref%20of%20all%20text%20matched%20for%0aa%20particular%20subrule">Do not assume that %item contains an array ref of all text matched for
 a particular subrule
+
+</A></LI>
+<LI><A HREF="#use%20%3crulevar%3a%20local%20%24x%3e%20not%20%3crulevar%3a%20%24x%3e">use &lt;rulevar: local $x&gt; not &lt;rulevar: $x&gt; 
 
 </A></LI>
 <LI><A HREF="#Don't%20use%20%24%3a%3aRD_AUTOACTION%20to%20print%20while%20you%20are%20parsing">Don't use $::RD_AUTOACTION to print while you are parsing
@@ -364,6 +370,17 @@ and is guaranteed to make a production fail immediately.
 <H1><A NAME="MODULAR%20%2f%20GENERATIVE%20%2f%20CREATIVE%20%2f%20HAIRY%20PARSING">MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
 
 </A></H1>
+<H2><A NAME="Parsing%20sentences%20to%20generate%20sentences">Parsing sentences to generate sentences
+
+</A></H2>
+
+<P>In this column, Randal shows how to read text to generate more text.
+He parses sentences to make Parse::RecDescent parse trees which he then
+re-walks with random weightings to create new sentences.
+
+</P>
+<PRE> http://www.stonehenge.com/merlyn/LinuxMag/col04.html
+</PRE>
 <H2><A NAME="Calling%20a%20parser%20within%20a%20grammar">Calling a parser within a grammar
 
 </A></H2>
@@ -830,6 +847,22 @@ subrule.
 <P>To get each value for the number subrule, you have a couple of choices,
 both documented in the Parse::RecDescent manpage under
 <CODE>@item and %item</CODE>.
+
+</P><H2><A NAME="use%20%3crulevar%3a%20local%20%24x%3e%20not%20%3crulevar%3a%20%24x%3e">use &lt;rulevar: local $x&gt; not &lt;rulevar: $x&gt; 
+
+</A></H2>
+
+<P>If you say:
+
+</P>
+<PRE>	somerule: &lt;rulevar: $x&gt;</PRE>
+
+<P>you get a lexical $x within the rule (only). If you say:
+
+</P>
+<PRE>	somerule: &lt;rulevar: local $x&gt;</PRE>
+
+<P>you get a localized $x within the rule (and any subrules it calls).
 
 </P><H2><A NAME="Don't%20use%20%24%3a%3aRD_AUTOACTION%20to%20print%20while%20you%20are%20parsing">Don't use $::RD_AUTOACTION to print while you are parsing
 

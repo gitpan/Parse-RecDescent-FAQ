@@ -7,3 +7,4 @@ pod2html FAQ.pm FAQ.html
 pod2text FAQ.pm > FAQ.text
 rm *.tar.gz
 make tardist
+pause *.tar.gz

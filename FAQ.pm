@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.8 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.10 $ =~ /Revision:\s+(.*)\s+/ ;
 
 
 1;
@@ -173,6 +173,15 @@ So if you would like to state the test in the positive, then do this:
 =back
 
 =head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
+
+=head2 Parsing sentences to generate sentences
+
+In this column, Randal shows how to read text to generate more text.
+He parses sentences to make Parse::RecDescent parse trees which he then
+re-walks with random weightings to create new sentences.
+
+ http://www.stonehenge.com/merlyn/LinuxMag/col04.html
+
 
 =head2 Calling a parser within a grammar
 
@@ -558,6 +567,18 @@ subrule.
 To get each value for the number subrule, you have a couple of choices,
 both documented in the Parse::RecDescent manpage under
 C<@item and %item>.
+
+=head2 use <rulevar: local $x> not <rulevar: $x> 
+
+If you say:
+
+	somerule: <rulevar: $x>
+
+you get a lexical $x within the rule (only). If you say:
+
+	somerule: <rulevar: local $x>
+
+you get a localized $x within the rule (and any subrules it calls).
 
 =head2 Don't use $::RD_AUTOACTION to print while you are parsing
 
