@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.34 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.35 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -1462,10 +1462,14 @@ It is obtainable from http://perl.plover.com/py/
 A bottom-up parser which will be familiar to those who
 have used Lex and Yacc. Parse::RecDescent is a top-down parser.
 
-=item * Text::Balanced 
+=item * Text::Balanced  and Regexp::Common::balanced
 
 Use this instead of writing hairy regular expressions to match certain
 common "balanced" forms of text, such as tags and parenthesized text.
+
+See http://perlmonks.org/index.pl?node_id=208285
+for an example of where it would be better suited for the task than
+Parse::RecDescent.
 
 =item * "Mastering Regular Expressions" by Jeffrey Freidl
 
