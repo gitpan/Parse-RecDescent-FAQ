@@ -8,7 +8,8 @@ echo
 echo I hope you bumped the version number
 echo
 
-cvs commit
+#cvs commit
+make manifest
 ./tt.pl FAQ.tt
 mv FAQ.tt-out FAQ.pm
 pod2html FAQ.pm > FAQ.html

@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.91 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.92 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -467,6 +467,20 @@ Try this instead:
          newline: /\n/
 
 =back
+
+=head3  Example In a line-delimited grammar
+
+<tt>pod_code 'code/line-oriented-question.txt'</tt>
+
+=over 4
+
+=item * Answer by Damian:
+
+<tt>pod_code 'code/line-oriented-answer.txt'</tt>
+
+=back
+
+=cut
 
 =head1 COLUMN-ORIENTED PROCESSING
 

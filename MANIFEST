@@ -1,5 +1,4 @@
 ChangeLog
-EDIT_FAQ.tt.DO_NOT_EDIT_FAQ.pm
 code/consumer.question
 code/escape-perl-symbols.answer
 code/escape-perl-symbols.question
@@ -11,18 +10,21 @@ code/incremental-data-structure.question
 code/inter-token.question
 code/line-continuation.answer
 code/line-continuation.question
+code/line-oriented-answer.txt
+code/line-oriented-question.txt
 code/parenthesis-match.answer-lhoward
 code/parenthesis-match.answer-merlyn
 code/rule-call-parser.answer
 code/scored-grammar.answer
 code/shallow-deep-copy-tutorial.answer
 code/xor-alternation-matching.perl
+EDIT_FAQ.tt.DO_NOT_EDIT_FAQ.pm
 FAQ.pm
 FAQ.tt
-MANIFEST
 Makefile.PL
+MANIFEST
+META.yml			Module meta-data (added by MakeMaker)
 release
-view
 test.pl
 tt.pl
-META.yml                                Module meta-data (added by MakeMaker)
+view
