@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.33 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.34 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -378,6 +378,46 @@ So if you would like to state the test in the positive, then do this:
 =back
 
 =head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
+
+=head2 Macro processing
+
+In a RecDescent grammar, I'd like to add support in my language for
+"macros".  These macros would be very much like #define macros in C
+and would support arguments that are instantiated into the
+expansion. In C, this looks something like:  
+
+ #define   add(a,b)        (a+b)
+
+In my language, I'd like something like: 
+
+ myMacro(x,y):        any_expression
+
+where "any_expression" is any old (deep) expression defined elsewhere
+in the grammar, and C<(x,y)> would be replaced/instantiated in that
+expression.  
+This may seem straighforward, but, well, it ain't to me. (I am, after
+all, mush4brains.)  In my P::RD grammar, the "macro" rule without
+arguments would look like: 
+
+ macro:         identifier ':' expr
+
+where, again, expr is defined fully in the grammar. Adding arguments
+to this... I need to instantiate my C<(x,y)> into the "expr" string
+before the subrules interpret it.  
+Now... I thought of using standard Perl substitution in a pre-scan,
+but this seems less-than-ideal, since it requires some knowledge of
+the grammar in the Perl REs. I thought of using two separate grammars,
+the first of which is a simplified version of the full second grammar,
+but this also seems a bit redundant.  
+
+=over 4 
+
+=item * And the answer is...
+
+ http://perlmonks.org/index.pl?node_id=176399
+
+=back
+
 
 =head2 Cloning parsers but giving each parser it own package
 
