@@ -2,6 +2,27 @@ NAME
     Parse::RecDescent::FAQ - the official, authorized FAQ for
     Parse::RecDescent.
 
+DEBUGGING
+  Making warning line numbers correspond to your grammar
+
+    How do I match the line numbers with the actual contents of my script?
+
+    At present, you can't (but that's on the ToDo list). Setting
+    `$::RD_TRACE' can be useful though:
+
+    Once you've run with `$RD_TRACE', do this:
+
+            perl -w RD_TRACE
+
+    Then go and examine the actual line numbers given for the error in the
+    file `RD_TRACE'.
+
+    That will show you the actual generated code that's the problem.
+
+    That code will, in turn, give you a hint where the problem is in the
+    grammar (e.g. find out which subroutine it's in, which will tell you the
+    name of the offending rule).
+
 IGNORABLE TOKENS
   Removing C comments
 

@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.12 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.13 $ =~ /Revision:\s+(.*)\s+/ ;
 
 
 1;
@@ -11,6 +11,29 @@ __END__
 =head1 NAME
 
 Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
+
+=head1 DEBUGGING
+
+=head2 Making warning line numbers correspond to your grammar
+
+How do I match the line numbers with the actual contents of my
+script?
+
+At present, you can't (but that's on the ToDo list).
+Setting C<$::RD_TRACE> can be useful though:
+
+Once you've run with C<$RD_TRACE>, do this:
+
+        perl -w RD_TRACE
+
+Then go and examine the actual line numbers given for the error
+in the file C<RD_TRACE>.
+
+That will show you the actual generated code that's the problem.
+
+That code will, in turn, give you a hint where the problem is in the
+grammar (e.g. find out which subroutine it's in, which will tell you the
+name of the offending rule).
 
 =head1 IGNORABLE TOKENS 
 

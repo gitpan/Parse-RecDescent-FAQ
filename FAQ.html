@@ -7,6 +7,14 @@
 <LI><A HREF="#NAME">NAME
 
 </A></LI>
+<LI><A HREF="#DEBUGGING">DEBUGGING
+
+</A></LI>
+<UL>
+<LI><A HREF="#Making%20warning%20line%20numbers%20correspond%20to%20your%20grammar">Making warning line numbers correspond to your grammar
+
+</A></LI>
+</UL>
 <LI><A HREF="#IGNORABLE%20TOKENS">IGNORABLE TOKENS 
 
 </A></LI>
@@ -184,6 +192,37 @@ a particular subrule
 </A></H1>
 
 <P>Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
+
+</P><H1><A NAME="DEBUGGING">DEBUGGING
+
+</A></H1>
+<H2><A NAME="Making%20warning%20line%20numbers%20correspond%20to%20your%20grammar">Making warning line numbers correspond to your grammar
+
+</A></H2>
+
+<P>How do I match the line numbers with the actual contents of my
+script?
+
+</P>
+<P>At present, you can't (but that's on the ToDo list).
+Setting <CODE>$::RD_TRACE</CODE> can be useful though:
+
+</P>
+<P>Once you've run with <CODE>$RD_TRACE</CODE>, do this:
+
+</P>
+<PRE>        perl -w RD_TRACE</PRE>
+
+<P>Then go and examine the actual line numbers given for the error
+in the file <CODE>RD_TRACE</CODE>.
+
+</P>
+<P>That will show you the actual generated code that's the problem.
+
+</P>
+<P>That code will, in turn, give you a hint where the problem is in the
+grammar (e.g. find out which subroutine it's in, which will tell you the
+name of the offending rule).
 
 </P><H1><A NAME="IGNORABLE%20TOKENS">IGNORABLE TOKENS 
 
