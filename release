@@ -10,10 +10,11 @@ echo
 echo I hope you bumped the version number
 echo
 
-cp ~/bin/tt.pl .
-~/bin/tt.pl FAQ.tt
+#cp ~/bin/tt.pl .
+./tt.pl FAQ.tt
 mv FAQ.tt-out FAQ.pm
 perl Makefile.PL PREFIX=$PERL
 rm *.tar.gz
 make tardist
-cpan-upload *.tar.gz
+pod2html FAQ.pm > FAQ.html
+

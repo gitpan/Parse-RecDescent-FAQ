@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.1 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.2 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -78,7 +78,7 @@ not being matched. I am sure this is a relatively straight-forward
 oversight within the grammar on my part, but I am at a loss as to how
 to correct this.  
 
-Program fragment delivered error ``couldnt open file : No such file or directory at /home/metaperl/bin/tt.pl line 18, <F> line 14.''
+Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18, <F> line 14.''
 
 =head3 Answer by Randal L. Schwartz
 
@@ -1715,15 +1715,44 @@ For instance, so:
  $a =~ /b.*n/;  # but different
  print $&;
 
-would yield "ban" instead of "banan"?
+yields C<banan>. How can I get it to yield
+C<ban>?
 
 =over 4
 
-=item *
+=item * Just use the non-greedy quantifier modifier, C<?> :
 
     $a =~ /b.*?n/;
 
 =back
+
+=head2 Tutorial on positive and negative lookahead and lookbehind
+regexps:
+
+ http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html
+
+
+=head2  Text::Balanced  and Regexp::Common::balanced
+
+Use this instead of writing hairy regular expressions to match certain
+common "balanced" forms of text, such as tags and parenthesized text.
+
+See http://perlmonks.org/index.pl?node_id=208285
+for an example of where it would be better suited for the task than
+Parse::RecDescent.
+
+=head2 Printed Resources
+
+=head3 Japhy's Book on Regular Expressions
+
+Ok, so he hasn't named it yet. It's available online for free!
+
+  http://japhy.perlmonk.org/book
+
+=head3 "Mastering Regular Expressions" by Jeffrey Freidl
+
+
+You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 
 
@@ -2179,10 +2208,6 @@ Written in Parse::RecDescent by Tim Bunce:
 
  http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw
 
-=head1 Tutorial on positive and negative lookahead and lookbehind
-regexps:
-
- http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html
 
 =item * Data::MultiValuedHash on search.cpan.org
 
@@ -2213,19 +2238,6 @@ It is obtainable from http://perl.plover.com/py/
 
 A bottom-up parser which will be familiar to those who
 have used Lex and Yacc. Parse::RecDescent is a top-down parser.
-
-=item * Text::Balanced  and Regexp::Common::balanced
-
-Use this instead of writing hairy regular expressions to match certain
-common "balanced" forms of text, such as tags and parenthesized text.
-
-See http://perlmonks.org/index.pl?node_id=208285
-for an example of where it would be better suited for the task than
-Parse::RecDescent.
-
-=item * "Mastering Regular Expressions" by Jeffrey Freidl
-
-You still need to know when to use /.*/ or /.+/ or /[^x]*/
 
 =item * "Data Munging with Perl" by Dave Cross
 

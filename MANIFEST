@@ -25,3 +25,4 @@ release
 view
 test.pl
 tt.pl
+META.yml                                Module meta-data (added by MakeMaker)
