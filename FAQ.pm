@@ -2,7 +2,8 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.22 $ =~ /Revision:\s+(.*)\s+/ ;
+
+our $VERSION = sprintf '%s', q$Revision: 2.23 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -12,6 +13,89 @@ __END__
 Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
 
 =head1 DEBUGGING
+
+=head1 PARSER BEHAVIOR
+
+=head2 Commit in subrule which is optional in rule
+
+Ques: When a subrule in a rule that has a "zero or
+more" repetition specifier (ie. ? or s?) has a
+<commit> directive in its production followed by the
+conditional <error?> <reject> production, if that
+subrule's production becomes committed, does that
+error cause the rule containing the subrule to fail
+also?  It should right, if we have committed?  It does
+not seem to work.
+
+Here is what I mean:
+
+ myrule: 'stuff' mysubrule(?)
+
+ mysubrule: ID <commit> '[' ']'
+       | <error?> <reject>
+
+If the 1st production of mysubrule has committed, then
+myrule should fail.  It doesn't seem to.  If this is
+not a bug, how do I get this behavior?
+
+=over 4
+
+=item * Answer by Damian
+
+The optional nature of the reference to mysubrule(?)
+means that, when the subrule fails (whether committed or not)
+the failure doesn't matter, since myrule can match if it
+finds zero mysubrules, which it just did.
+
+
+The usual way to get the rule-of-the-subrule to fail upon subrule failure is
+by "anchoring" the end of the match. That might be:
+
+  myrule: 'stuff' mysubrule(?) ...!ID
+
+  mysubrule: ID <commit> '[' ']'
+           | <error?> <reject>
+
+or 
+
+  myrule: 'stuff' mysubrule(?) /\s*\Z/
+
+  mysubrule: ID <commit> '[' ']'
+           | <error?> <reject>
+
+
+or whatever addition confirms that there really wasn't anything else
+after 'stuff'.
+
+=item * Now that you think you know the answer...
+
+That answer is partially wrong, as was pointed out by Marcel Grunaer.
+In this phrase:
+
+  myrule: 'stuff' mysubrule(?) ...!ID
+
+it is necessary to return a { 1 }, as the rule
+fails otherwise, presumably because of the negative lookahead:
+
+  myrule: 'stuff' mysubrule(?) ...!ID { 1 }
+
+Marcel went on to point out an optimization:
+
+another option would be the use of a rulevar:
+
+  myrule : <rulevar: local $failed>
+  myrule : 'stuff' mysubrule(?) <reject:$failed>
+
+  mysubrule: ID <commit> '[' ']'
+    | <error?> { $failed++ }
+
+this way you don't have to specify a potentially complex negative
+lookahead, and the method works over several levels of subrules
+as well.
+
+
+=back
+
 
 =head2 Making warning line numbers correspond to your grammar
 
@@ -791,6 +875,12 @@ alternatively use P::RD's tracing functionality to observe parsing in
 action.
 
 =head1 ERROR HANDLING
+
+=head 2 Propagating a failure up after a <commit> on a subrule
+
+See L<Commit in subrule which is optional in rule|Commit in subrule which is optional in rule>
+
+
 
 =head2 In a non-shell (e.g. CGI) environment
 
