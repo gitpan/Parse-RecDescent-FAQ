@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.19 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.21 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -24,7 +24,7 @@ Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent.
 
 =back
 
-Also see the "Left-recursion" section under "PARSER BEHAVIOR"
+Also see the "Left-recursion" section under L</PARSER BEHAVIOR>
 
 =head1 DEBUGGING
 
@@ -62,6 +62,66 @@ name of the offending rule).
 
 
 =head1 PARSER BEHAVIOR
+
+=head2 Using Rule Ordering to Get the Desired Match
+
+This logically belongs under L</THINGS NOT TO DO>, but I put it here
+for maximum reader exposure.
+
+Plagiarized from L<http://perlmonks.org/index.pl?node_id=303626> :
+
+I have the following BNF and am trying to get it to work with RecDescent. 
+I'm evaluating the WHERE condition on a simplified SQL statement.
+
+This is the BNF:
+
+	<cond> ::= <x> [ "OR" <cond> ]
+	<x>    ::= <y> [ "AND" <y> ]
+	<y>    ::= "(" <cond> ")" | <z> <op> <z>
+	<z>    ::= [tabname"."]colname | <value>
+	<op>   ::= "<" | ">" | "=" | "<>" | "<=" | ">="
+
+C<tabname> and C<colname> are identifiers which have at most 20 characters, 
+start with a letter, and cannot end in an underscore. 
+C<colname> as seen above can take the forme C<tabname.colname>
+
+This is my grammar as I've converted it:
+
+	condition : x | x /OR/i condition
+	x : y | y /AND/i y
+	y : "(" condition ")" | z OP z 
+	z : TABCOLNAME | COLNAME | VALUE
+    
+	# Terminals
+	TABCOLNAME : /([a-z]{1}[\w]{0,18}[^_])\.([a-z]{1}[\w]{0,18}[^_\ ])/i
+	COLNAME : /([a-z]{1}[\w]{0,18}[^_\ ])/i
+	VALUE : /(\w+)/ix
+	OP : /(<>|<=|>=|=|<|>)/
+if my string is when parsing 
+
+	"ssn = 1234 and name = bob" 
+
+only 
+
+	"ssn = 1234" 
+
+gets put in @item.
+
+And Abigail doth respondeth:
+
+That's because you give Parse::RecDescent options for the x and y
+rules. PRD will, just like Perl regexes, try alternatives in order,
+left one first. So, if PRD has to choose between C<y> and C<y /AND/i y>,
+it'll first do the C<y>, and only if that alternative fails, it'll try
+the alternative. 
+
+You can fix this by requiring that after matching the SQL statement, it should match the end of the string. But, for efficiency, also reorganize the rules:
+
+	condition:  x /OR/i x
+	         |  x
+	x:          y /AND/i y
+	         |  y
+
 
 =head2 Insuring a top-level rule match
 
