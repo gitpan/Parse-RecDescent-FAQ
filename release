@@ -12,7 +12,7 @@ cvs commit
 ./tt.pl FAQ.tt
 mv FAQ.tt-out FAQ.pm
 pod2html FAQ.pm > FAQ.html
-perl Makefile.PL PREFIX=$PERL
+perl Makefile.PL
 rm *.tar.gz
 make tardist
 

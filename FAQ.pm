@@ -1,9 +1,9 @@
-package Parse::RecDescent::FAQ; 
+package Parse::RecDescent::FAQ;  # -*- auto-fill -*-
 
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.21 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.25 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -16,29 +16,12 @@ Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent.
 
 =head2 Is Parse::RecDescent LL(1)? LL(N)? LR(1)? LR(N)?
 
-=over 4
+A very complete answer to that question is available here:
 
-=item Answer by Yves Orton:
-
-I have a data structure which is
-
-a hash of entries
-where
-an entry is a list/array of sets
-
-I have also a grammar that can parse the syntax of the text files that
-contain the data I want to fill this structure with. Until here
-everything is ok.
-
-Problem: I cannot figure out how to actually FILL the parsed data into
-the structure. I can only decide if a string is grammatically correct
-or not.
+    http://www.perlmonks.org/index.pl?lastnode_id=480&node_id=153155
 
 
-
-=back
-
-Also see the "Left-recursion" section under L</PARSER BEHAVIOR>
+Also see  L</Left-recursion> under L</PARSER BEHAVIOR>
 
 =head1 DEBUGGING
 
@@ -77,12 +60,12 @@ name of the offending rule).
 
 =head1 PARSER BEHAVIOR
 
-=head2 Using Rule Ordering to Get the Desired Match
+=head2 Using rule ordering to get the desired match
 
 This logically belongs under L</THINGS NOT TO DO>, but I put it here
 for maximum reader exposure.
 
-Plagiarized from L<http://perlmonks.org/index.pl?node_id=303626> :
+Plagiarized from http://perlmonks.org/index.pl?node_id=303626 :
 
 I have the following BNF and am trying to get it to work with RecDescent. 
 I'm evaluating the WHERE condition on a simplified SQL statement.
@@ -158,7 +141,7 @@ not being matched. I am sure this is a relatively straight-forward
 oversight within the grammar on my part, but I am at a loss as to how
 to correct this.  
 
-Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18, <F> line 14.''
+Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18.''
 
 =head3 Answer by Randal L. Schwartz
 
@@ -311,9 +294,9 @@ which is a literal dot.
 
 =head2 Left-recursion
 
-=over 4
+=head3 Elimination of
 
-=item * On elimination of left-recursion Randal Schwartz states:
+On elimination of left-recursion Randal Schwartz states:
 
 I had a fun time eliminating a mutual left-recursion problem for
 my "Data-Undumper" program, which used P::RD as an essential component.
@@ -321,18 +304,21 @@ See my discussion of such at
 
  http://www.stonehenge.com/merlyn/LinuxMag/col29.html
 
-=item * Also, regarding elimination see this Perlmonks node:
+Also, regarding elimination see this Perlmonks node:
 
  http://www.perlmonks.org/index.pl?lastnode_id=6364&node_id=153155
 
-=item * Regarding detection of left-recursion, Conway states:
+And finally "The man(1) of descent" by Conway in The Perl Journal
+issue 12 (also in tutorial directory of the distribution) discusses
+left recursion and its workaround.
+
+=head3 Detection by PRD
 
 RecDescent does a complete graph traversal looking for n-ary
 left-recursion loops and fails to compile the grammar if it finds any
 left-recursive loop involving any number of rules. It has done this since its
 earliest versions.
 
-=back
 
 
 
@@ -486,7 +472,13 @@ by Dave Cross.
 
 =item * And the newest answer by the tireless Randal L. Schwartz: 
 
-  L<http://www.stonehenge.com/merlyn/UnixReview/col40.html>
+  http://www.stonehenge.com/merlyn/UnixReview/col40.html
+
+=item * And a CPAN release:
+
+Config::Yacp,
+
+	http://search.cpan.org/~tstanley/Config-Yacp-1.16/
 
 =back
 
@@ -2290,6 +2282,11 @@ You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 =head2 Practical Parser Examples
 
+=head3 Config::Yacp
+
+Config::Yacp is a module which parses INI-style config
+files using Parse::RecDescent.
+
 =head3 XSH - The XML Editing Shell
 
 XSH:
@@ -2312,14 +2309,14 @@ It should be fairly easy to modify it to work for boolean logic.
 
 Written in Parse::RecDescent by Tim Bunce:
 
-L<http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw>
+http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw
 
 =head2 Web Resources
 
 
 =head3 Hugh Myer's tips on Parse::RecDescent
 
-L<http://www.perlmonks.org/index.pl?node_id=180778>
+http://www.perlmonks.org/index.pl?node_id=180778
 
 17 tips you cannot do without.
 
