@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-$VERSION = '1.1';
+$VERSION = '1.2';
 
 1;
 __END__
@@ -10,8 +10,6 @@ __END__
 =head1 NAME
 
 Parse::RecDescent::FAQ - Unofficial, unauthorized FAQ for Parse::RecDescent
-
-=head1 GENERAL
 
 =head1 PROGRAMMING QUESTIONS
 
@@ -62,8 +60,9 @@ Simplifying the grammar, we get:
 Maybe Text::Balanced is enough for your needs. See it on www.CPAN.org
 under author id DCONWAY.
 
-=head2 I have a set of alternatives on which I want to avoid
-the default first-match-wins behavior of Parse::RecDescent. How do I do it?
+=head2 I have a set of alternatives on which I want to avoid the
+default first-match-wins behavior of Parse::RecDescent. How do I do
+it? 
 
 =item * Use a scored grammar. For example, this scoring directive
 
@@ -310,7 +309,78 @@ purpose of this. Working from inner to outer:
                              # different from the first array we
                              # dereferenced?
 
-=item * A tutorial on Shallow versus Deep Copying by "Philip 'Yes, that's my address' Newton" <nospam.newton@gmx.li>
+
+=item * Matthew Wickerline says
+
+The line from demo_calc.pl is in
+fact not doing any deep copying.
+
+
+    #!/usr/bin/perl -w
+    my @original = (
+        [0],  [1,2,3],  [4,5,6],  [7,8,9]
+    );
+    my @copy = &some_kind_of_copy( \@original );
+    sub some_kind_of _copy {
+        # here's that line from demo_calc.pl
+        my (@list) = @{[@{$_[0]}]};
+        return @list;
+    }
+
+ $original[0][0]         = 'zero';
+ @{ $original[1] }[0..2] = qw(one   two   three);
+ @{ $original[2] }[0..2] = qw(four  five  six);
+ @{ $original[3] }[0..2] = qw(seven eight nine);
+    # now use the debugger to look at the addresses,
+    # or use Data::Dumper to look at @copy, or just
+    # compare one of the items...
+ if (  $copy[1][2] eq 'three'  ) {
+    print "Shallow Copy\n";
+ } elsif (  $copy[1][2] == 3  ) {
+    print "Deep Copy\n";
+ } else {
+        print "This should never happen!!!\n"
+	}
+
+
+If you wanted that line to do deep copying of a list of anon arrays,
+then the line should read
+
+    my @list = map  { [@$_] }  @{$_[0]};
+               # turn $_[0] into a list (of arrayrefs)
+               # turn each (arrayref) element of that list
+               # into an anonymous array containing
+               # a list found by derefrencing the arrarref
+
+Try plugging that line into above script instead of the line from the
+demo_calc.pl and you'll see different output. The line from demo_calc.pl
+is in fact doing extra useless work. My guess is that the extra
+    @{[    ]}
+around there is one of two things:
+    1) a momentary lapse of attention
+       resulting in a copy/paste error, or duplicate typing
+ or
+    2) an artifact of earlier code wherein something extra was
+       going on in there and has since been deleted.
+
+Even Damian can make a mistake, but it's not a mistake that affects
+output... it just makes for a tiny bit of wasted work (or maybe Perl is
+smart enough to optimze away the wasted work, I dunno).
+
+-matt
+
+
+=head2 "Listifying scalars"
+
+Quite often when using Parse::RecDescent, I want to treat the return value of 
+a production the same regardless of whether P::R returns a string or a 
+list of string.
+
+=item * Use Scalar::Listify from CPAN.
+
+=head2 A tutorial on Shallow versus Deep Copying by "Philip 'Yes, that's my address' Newton" <nospam.newton@gmx.li>
+
+This is some useful information. Use as thy will.
 
 
 On Wed, 08 Nov 2000 23:34:47 GMT, Freeflowinfreestylinfreeforall
@@ -508,13 +578,6 @@ Philip
 Philip Newton <nospam.newton@gmx.li>
 If you're not part of the solution, you're part of the precipitate
 
-=head2 "Listifying scalars"
-
-Quite often when using Parse::RecDescent, I want to treat the return value of 
-a production the same regardless of whether P::R returns a string or a 
-list of string.
-
-Use Scalar::Listify from CPAN.
 
 
 =head1 SEE ALSO
@@ -549,8 +612,24 @@ A useful site to get fast help on Perl.
 
 =head1 AUTHOR
 
-The author of this FAQ is Terrence Brannon <tbon@cpan.org>. 
+The author of this FAQ is Terrence Brannon <tbone@cpan.org>. 
+
 The author of Parse::RecDescent 
 is Damian Conway. I asked him if he wanted to make this the official FAQ
 for P::RD, but he did not reply. Sigh.
+
+The (unwitting) contributors to this FAQ
+
+=over 4 
+
+=item * Me, the FAQ author, Terrence Brannon
+
+=item * Randal L. Schwartz, Perl hacker
+
+=item * lhoward of Perlmonks
+
+=item * Matthew Wickline
+
+=back 
+
 =cut
