@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%2d.%02d', q$Revision: 2.0 $ =~ /(\d+)\.(\d+)/;
+our $VERSION = sprintf '%s', q$Revision: 2.6 $ =~ /Revision:\s+(.*)\s+/ ;
 
 
 1;
@@ -12,7 +12,9 @@ __END__
 
 Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
 
-=head1 IGNORABLE TOKENS (e.g. C comments)
+=head1 IGNORABLE TOKENS 
+
+=head2 Removing C comments
 
 Since there is no separate lexer in recdescent. And it is top down. Is
 there anyway to deal w/ removing C comments that could be anywhere.
@@ -28,6 +30,59 @@ Do something like this:
 	program: <skip: qr{\s* (/[*] .*? [*]/ \s*)*}x> statement(s)
 
 	statement: # etc...
+
+=back
+
+=head1 NEWLINE PROCESSING
+
+=head2 As end of line
+
+
+
+I'm trying to parse a text line by line using Parse::RecDescent. Each
+line is terminated by a "\n".
+
+Although the task setting up a grammar for this case is straightforward
+the following program doesn't
+produce any results.
+
+
+     use Parse::RecDescent;
+
+     $grammar =
+     q{
+         line:       word(s) newline { print "Found a line\n"; }
+         word:       /\w+/
+         newline : /\n/
+     };
+
+     $parse = new Parse::RecDescent ($grammar);
+
+
+     $data =
+     qq(This is line one\nAnd this is line two\n);
+
+     $parse->line($data);
+
+
+RecDescent doesn't recognize the newlines. Does anybody know what I'm
+getting wrong?
+
+=over 4
+
+=item * Answer by Damian
+
+
+
+By default, P::RD skips all whitespace (*including* newlines) before
+tokens. 
+
+Try this instead:
+
+         line:    <skip: qr/[ \t]*/> word(s) newline 
+				{ print "Found a line\n"; }
+         word:    /\w+/
+         newline: /\n/
 
 =back
 
@@ -65,7 +120,7 @@ lookahead/backtracking that RecDescent doesn't do).
 
 =back
 
-=over 4
+
 
 =head2 Another example
 
@@ -115,104 +170,51 @@ So if you would like to state the test in the positive, then do this:
 
    line: word '' { $thiscolumn == 22 || undef } word 
 
-=cut
-
-=head1 Parse::RecDescent Questions
-
-=head2 Precompiling Grammars for Speed of Execution
-
-Take a look at Parse::RecDescent's precompilation option
-
-=head2 Capturing whitespace between tokens
-
-I need to capture the whitespace between tokens using Parse::RecDescent.
-I've tried modifying the $skip expression to // or /\b/ (so I can tokenize
-whitespace), but that doesn't seem to have the desired effect.
-
-Just having a variable where all skipped whitespace is stored would be
-sufficient.
-
-Does anybody know how to trick Parse::RecDescent into doing this?
-
-=over 4
-
-=item * Answer by Damian Conway
-
-To turn off whitespace skipping so I can handle it manually, I always use:
-
-	<skip:''>
-
-See:
-
-	demo_decomment.pl
-	demo_embedding.pl
-	demo_textgen.pl
-
-for examples.
-
 =back
 
-=head2 Matching line continuation characters
+=head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
 
-I need to parse a grammar that includes line continuation
-characters.  For example:
+=head2 Calling a parser within a grammar
 
- // COMMAND ARG1-VALUE,ARG2-VALUE, +
-    ARG3-VALUE,ARG4-VALUE, +
-    EVEN-MORE-ARGS
- // ANOTHERCOMMAND
- * and a comment
- * or two
+I have a script that uses Parse::RecDescent, in which I want to define 2
+parsers. The grammar for the second parser has to call the first parser.
 
-How do I formulate a rule (or rules) to treat the first command
-as if all 5 arguments were specified on a single line?  I need to
-skip over the /\s*+\n\s*/ sequence.  It seems like skip or resync
-should do this for me, but if so, I haven't discovered the
-correct technique, yet.
-
-
+Can I do this?
 
 =over 4
 
-=item * Answer by Damian Conway
+=item * yes, here's an example
 
+ 
+ #!/usr/local/bin/perl -w
+ use strict;
  use Parse::RecDescent;
  
- my @lines = << 'EOINST';
- // COMMAND ARG1-VALUE,ARG2-VALUE, +
-    ARG3-VALUE,ARG4-VALUE, +
-    EVEN-MORE-ARGS
- // ANOTHERCOMMAND
- * and a comment
- * or two
- EOINST
+ $::RD_ERRORS = 1;
+ $::RD_WARN = 1;
+ $::RD_HINT = 1;
  
- my $parse = Parse::RecDescent->new(join '', <DATA>) or die "Bad Grammar!";
+ our $text_to_parse = "";
  
- use Data::Dumper 'Dumper';
- print Dumper [
- $parse->Instructions("@lines") or die "NOT parsable!!\n"
- ];
+ my $grammar1 = q{
+ [...]
+ }
  
- __DATA__
+ our $inner_parser = new Parse::RecDescent($grammar1);
  
- Instructions: command(s)
+ my $grammar2 = q{
+ [...]
  
- command: multiline_command
-        | singleline_command
-        | comment
+ rule: TEXT
+ 	{
+ 	  $text_to_parse = $item{TEXT};
+           if (defined $text_to_parse) { print "executing inner parse...\n"; }
+           my $p_text = $inner_parser->startrule($text_to_parse);
+ 	}
  
- singleline_command: 
- 	'//'  /.*/
- 		{ {command => $item[-1]} }
+ [...]
  
- multiline_command:  
- 	'//' /(.*?[+][ \t]*\n)+.*/
- 		{ $item[-1] =~ s/[+][ \t]*\n//g; {command => $item[-1]} }
- 
- comment:
- 	'*'  /.*/
- 		{ {comment => $item[-1]} }
+ }
  
 
 
@@ -304,6 +306,305 @@ with a grammar that's way more elegant and efficient...)
  term : ident '(' meaning ')' | ident
 
 =back
+
+
+=head1 CLEANING UP YOUR GRAMMARS
+
+In honor of the original (and greatest) Perl book on cleaning up your
+Perl code, this section is written in the style of 
+Joseph Hall's "Effective Perl Programming"
+
+=head2 Use repetition modifiers with a separator pattern to match
+CSV-like data
+
+The intuitive to match CSV data is this:
+
+ CSVLine:
+      NonFinalToken(s?) QuotedText
+ NonFinalToken: 
+      QuotedText Comma
+      { $return = $item[1] }
+
+or, in other (merlyn's) words, "many comma terminated items followed by
+one standalone item".
+
+Instead, take the approach shown by merlyn:
+
+ CSVLine: QuotedText(s Comma) { use Data::Dumper; Dumper($item[1]) }
+
+Then just define C<QuotedText>, C<Comma>, and you're done!
+
+=head1 OPTIMIZING YOUR GRAMMARS
+
+=head2 Precompiling Grammars for Speed of Execution
+
+Take a look at Parse::RecDescent's precompilation option
+
+=head2 Parse::RecDescent is slow on Really Big Files. How can I speed it up?
+
+=over 4
+
+=item * Reduce the "depth" of the grammar. Use fewer levels
+of nested subrules.
+
+=item * Where possible, use regex terminals instead of subrules.  For 
+example, instead of:
+
+		string: '"' char(s?) '"'
+
+		char:   /[^"\\]/
+		    |   '\\"'
+		    |   '\\\\'
+
+write:
+
+		string: /"([^"\\]|\\["\\])*"/
+
+=item * Where possible, use string terminals instead of regexes.
+
+=item * Use repetitions or <leftop>/<rightop> instead of recursion.
+
+For example, instead of:
+
+		list:  '(' elems ')'
+		elems: elem ',' elems
+		     | elem
+
+write:
+
+		list: '(' <leftop: elem ',' elem> ')'
+
+or:
+
+		list: '('  elem(s /,/)  ')'
+
+=item * Factor out common prefixes in a set of alternate productions.
+
+For example, instead of:
+		
+		id: name rank serial_num
+		  | name rank hair_colour
+		  | name rank shoe_size
+
+write:
+		  
+		id: name rank (serial_num | haircolour | shoe_size)
+
+=item * Pre-parse the input somehow to break it into smaller sections.
+Parse each section separately.
+
+=item * Precompile they grammar. This won't speed up the parsing, but it
+will speed up the parser construction for big grammars (which
+Really Big Files often require).
+
+=item * Consider whether you would be better porting your grammar to
+Parse::Yapp instead.
+
+=back
+
+=head1 CAPTURING MATCHES
+
+=head2 Hey! I'm getting back ARRAY(0x355300) instead of what I set $return to!
+
+Here's a prime example of when this mistake is made:
+
+ QuotedText: 
+       DoubleQuote TextChar(s?) DoubleQuote
+       { my $chars = scalar(@item) - 1;  
+         $return = join ('', @item[2..$chars]) }
+
+This rule is incorrectly written. The author thinks that C<@item> will
+have one C<TextChar> from position 2 until all C<TextChar>s are matched.
+However, the true structure of C<@item> is:
+
+=over 4
+
+=item position one: the string matched by rule DoubleQuote
+
+=item position two: array reference representing parse tree for TextChar(s?)
+
+=item position three: the string matched by rule DoubleQuote
+
+=back
+
+Note that position two is an array reference. So the rule must be
+rewritten in this way.
+
+ QuotedText: 
+       DoubleQuote TextChar(s?) DoubleQuote
+       { $return = join ( '', @{$item[2]} ) }
+     
+
+=head2 Getting text from subrule matches
+
+I can't seem to get the text from my subrule matches...
+
+=over 4
+=item * Answer by Damian Conway
+
+Your problem is in this rule:
+
+    tuple : (number dot)(2)
+
+is the same as:
+
+    tuple        : anon_subrule(2)
+
+    anon_subrule : number dot
+
+Like all subrules, this anonymous subrule returns only its last item
+(namely, the dot). If you want just the number back, write this:
+
+    tuple : (number dot {$item[1]})(2)
+
+If you want both number and dot back (in a nested array), write this:
+
+    tuple : (number dot {\@item})(2)
+
+=back
+
+
+
+=head2 Capturing whitespace between tokens
+
+I need to capture the whitespace between tokens using Parse::RecDescent.
+I've tried modifying the $skip expression to // or /\b/ (so I can tokenize
+whitespace), but that doesn't seem to have the desired effect.
+
+Just having a variable where all skipped whitespace is stored would be
+sufficient.
+
+Does anybody know how to trick Parse::RecDescent into doing this?
+
+=over 4
+
+=item * Answer by Damian Conway
+
+To turn off whitespace skipping so I can handle it manually, I always use:
+
+	<skip:''>
+
+See:
+
+	demo_decomment.pl
+	demo_embedding.pl
+	demo_textgen.pl
+
+for examples.
+
+=back
+
+=head2 My grammar is not returning any data! 
+
+What's wrong?!
+
+=over 4
+
+=item * Answer by Brent Dax:
+
+This is a clue; either something is wrong with your actions or the
+grammar isn't parsing the data correctly. Try adding 
+  | <error> 
+
+clauses
+to the end of each top-level rule. This will tell you if there's a
+parsing error, and possibly what the error is. If this doesn't show
+anything, look hard at the actions. You may want to explicitly set the
+$return variable in the actions.   
+
+=back
+
+=head1 THINGS NOT TO DO
+
+=head2 Do not follow <resync> with <reject> to skip errors
+
+C<resync> is used to allow a rule which would normally fail to "pass" so that 
+parsing can continue. If you add the reject, then it unconditionally fails.
+
+=head2 Do not assume that %item contains an array ref of all text matched for
+a particular subrule
+
+For example: 
+
+        range: '(' number '..' number )'
+                        { $return = $item{number} }
+
+will return only the value corresponding to the last match of the C<number>
+subrule.
+
+To get each value for the number subrule, you have a couple of choices,
+both documented in the Parse::RecDescent manpage under
+C<@item and %item>.
+
+=head1 OTHER Parse::RecDescent QUESTIONS
+
+
+=head2 Matching line continuation characters
+
+I need to parse a grammar that includes line continuation
+characters.  For example:
+
+ // COMMAND ARG1-VALUE,ARG2-VALUE, +
+    ARG3-VALUE,ARG4-VALUE, +
+    EVEN-MORE-ARGS
+ // ANOTHERCOMMAND
+ * and a comment
+ * or two
+
+How do I formulate a rule (or rules) to treat the first command
+as if all 5 arguments were specified on a single line?  I need to
+skip over the /\s*+\n\s*/ sequence.  It seems like skip or resync
+should do this for me, but if so, I haven't discovered the
+correct technique, yet.
+
+
+
+=over 4
+
+=item * Answer by Damian Conway
+
+ use Parse::RecDescent;
+ 
+ my @lines = << 'EOINST';
+ // COMMAND ARG1-VALUE,ARG2-VALUE, +
+    ARG3-VALUE,ARG4-VALUE, +
+    EVEN-MORE-ARGS
+ // ANOTHERCOMMAND
+ * and a comment
+ * or two
+ EOINST
+ 
+ my $parse = Parse::RecDescent->new(join '', <DATA>) or die "Bad Grammar!";
+ 
+ use Data::Dumper 'Dumper';
+ print Dumper [
+ $parse->Instructions("@lines") or die "NOT parsable!!\n"
+ ];
+ 
+ __DATA__
+ 
+ Instructions: command(s)
+ 
+ command: multiline_command
+        | singleline_command
+        | comment
+ 
+ singleline_command: 
+ 	'//'  /.*/
+ 		{ {command => $item[-1]} }
+ 
+ multiline_command:  
+ 	'//' /(.*?[+][ \t]*\n)+.*/
+ 		{ $item[-1] =~ s/[+][ \t]*\n//g; {command => $item[-1]} }
+ 
+ comment:
+ 	'*'  /.*/
+ 		{ {comment => $item[-1]} }
+ 
+
+
+=back
+
 
 =head2 How can I match parenthetical expressions to arbitrary depth?
 
@@ -443,34 +744,6 @@ back
 
 =back
 
-=head2 Getting text from subrule matches
-
-I can't seem to get the text from my subrule matches...
-
-=over 4
-=item * Answer by Damian Conway
-
-Your problem is in this rule:
-
-    tuple : (number dot)(2)
-
-is the same as:
-
-    tuple        : anon_subrule(2)
-
-    anon_subrule : number dot
-
-Like all subrules, this anonymous subrule returns only its last item
-(namely, the dot). If you want just the number back, write this:
-
-    tuple : (number dot {$item[1]})(2)
-
-If you want both number and dot back (in a nested array), write this:
-
-    tuple : (number dot {\@item})(2)
-
-=back
-
 =head2 Matching blank lines
 
 How do I match an arbitrary number of blank lines in Parse::RecDescent?
@@ -560,25 +833,6 @@ it saw '#atlantis' or 'attack' (because then you are committed).
 
 =back
 
-=head2 My grammar is not returning any data! 
-
-What's wrong?!
-
-=over 4
-
-=item * Answer by Brent Dax:
-
-This is a clue; either something is wrong with your actions or the
-grammar isn't parsing the data correctly. Try adding 
-  | <error> 
-
-clauses
-to the end of each top-level rule. This will tell you if there's a
-parsing error, and possibly what the error is. If this doesn't show
-anything, look hard at the actions. You may want to explicitly set the
-$return variable in the actions.   
-
-=back
 
 =head2 How can I get at the text remaining to be parsed?
 
@@ -657,27 +911,6 @@ to this:
 
 =back
 
-=head1 THINGS NOT TO DO
-
-=head2 Do not follow <resync> with <reject> to skip errors
-
-C<resync> is used to allow a rule which would normally fail to "pass" so that 
-parsing can continue. If you add the reject, then it unconditionally fails.
-
-=head2 Do not assume that %item contains an array ref of all text matched for
-a particular subrule
-
-For example: 
-
-        range: '(' number '..' number )'
-                        { $return = $item{number} }
-
-will return only the value corresponding to the last match of the C<number>
-subrule.
-
-To get each value for the number subrule, you have a couple of choices,
-both documented in the Parse::RecDescent manpage under
-C<@item and %item>.
 
 
 =head1 Programming Topics Germane to Parse::RecDescent Use
@@ -1126,6 +1359,16 @@ is by far the likeliest explanation.
 
 =over 4
 
+=item * Parse::Recdescent tutorial at www.perl.com
+
+http://www.perl.com/pub/a/2001/06/13/recdecent.html
+
+=item * py
+
+py, which I assume is short for C<parse yacc>, is a program by
+Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
+
+It is obtainable from http://perl.plover.com/py/
 
 =item * Parse::YAPP
 
@@ -1153,17 +1396,15 @@ A useful site to get fast help on Perl.
 
 =head1 AUTHOR
 
-The author of this FAQ is Terrence Brannon <tbone@cpan.org>. 
+The author of Parse::RecDescent::FAQ is Terrence Brannon <tbone@cpan.org>. 
 
-The author of Parse::RecDescent 
-is Damian Conway. I asked him if he wanted to make this the official FAQ
-for P::RD, but he did not reply. Sigh.
+The author of Parse::RecDescent is Damian Conway. 
 
 The (unwitting) contributors to this FAQ
 
 =over 4 
 
-=item * Me, the FAQ author, Terrence Brannon
+=item * Me
 
 =item * Damian Conway
 
@@ -1171,7 +1412,7 @@ The (unwitting) contributors to this FAQ
 
 =item * Brent Dax
 
-=item * Randal L. Schwartz, Perl hacker
+=item * Randal L. Schwartz (merlyn), Perl hacker
 
 =item * lhoward of Perlmonks
 

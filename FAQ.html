@@ -7,9 +7,24 @@
 <LI><A HREF="#NAME">NAME
 
 </A></LI>
-<LI><A HREF="#IGNORABLE%20TOKENS%20(e.g.%20C%20comments)">IGNORABLE TOKENS (e.g. C comments)
+<LI><A HREF="#IGNORABLE%20TOKENS">IGNORABLE TOKENS 
 
 </A></LI>
+<UL>
+<LI><A HREF="#Removing%20C%20comments">Removing C comments
+
+</A></LI>
+</UL>
+<LI><A HREF="#NEWLINE%20PROCESSING">NEWLINE PROCESSING
+
+</A></LI>
+<UL>
+<LI><A HREF="#As%20end%20of%20line">As end of line
+
+
+
+</A></LI>
+</UL>
 <LI><A HREF="#COLUMN-ORIENTED%20PROCESSING">COLUMN-ORIENTED PROCESSING
 
 </A></LI>
@@ -17,7 +32,131 @@
 <LI><A HREF="#Whitespace%2c%20text%2c%20column%20N%2c%20period%2c%20number%20(some%20reference%20to%20lookahead)">Whitespace, text, column N, period, number (some reference to lookahead)
 
 </A></LI>
+<LI><A HREF="#Another%20example">Another example
+
+</A></LI>
 </UL>
+<LI><A HREF="#MODULAR%20%2f%20GENERATIVE%20%2f%20CREATIVE%20%2f%20HAIRY%20PARSING">MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
+
+</A></LI>
+<UL>
+<LI><A HREF="#Calling%20a%20parser%20within%20a%20grammar">Calling a parser within a grammar
+
+</A></LI>
+<LI><A HREF="#Incremental%20generation%20of%20data%20structure%20representing%20parse">Incremental generation of data structure representing parse
+
+</A></LI>
+</UL>
+<LI><A HREF="#CLEANING%20UP%20YOUR%20GRAMMARS">CLEANING UP YOUR GRAMMARS
+
+</A></LI>
+<UL>
+<LI><A HREF="#Use%20repetition%20modifiers%20with%20a%20separator%20pattern%20to%20match%0aCSV-like%20data">Use repetition modifiers with a separator pattern to match
+CSV-like data
+
+</A></LI>
+</UL>
+<LI><A HREF="#OPTIMIZING%20YOUR%20GRAMMARS">OPTIMIZING YOUR GRAMMARS
+
+</A></LI>
+<UL>
+<LI><A HREF="#Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
+
+</A></LI>
+<LI><A HREF="#Parse%3a%3aRecDescent%20is%20slow%20on%20Really%20Big%20Files.%20How%20can%20I%20speed%20it%20up%3f">Parse::RecDescent is slow on Really Big Files. How can I speed it up?
+
+</A></LI>
+</UL>
+<LI><A HREF="#CAPTURING%20MATCHES">CAPTURING MATCHES
+
+</A></LI>
+<UL>
+<LI><A HREF="#Hey!%20I'm%20getting%20back%20ARRAY(0x355300)%20instead%20of%20what%20I%20set%20%24return%20to!">Hey! I'm getting back ARRAY(0x355300) instead of what I set $return to!
+
+</A></LI>
+<LI><A HREF="#Getting%20text%20from%20subrule%20matches">Getting text from subrule matches
+
+</A></LI>
+<LI><A HREF="#Capturing%20whitespace%20between%20tokens">Capturing whitespace between tokens
+
+</A></LI>
+<LI><A HREF="#My%20grammar%20is%20not%20returning%20any%20data!">My grammar is not returning any data! 
+
+</A></LI>
+</UL>
+<LI><A HREF="#THINGS%20NOT%20TO%20DO">THINGS NOT TO DO
+
+</A></LI>
+<UL>
+<LI><A HREF="#Do%20not%20follow%20%3cresync%3e%20with%20%3creject%3e%20to%20skip%20errors">Do not follow &lt;resync&gt; with &lt;reject&gt; to skip errors
+
+</A></LI>
+<LI><A HREF="#Do%20not%20assume%20that%20%25item%20contains%20an%20array%20ref%20of%20all%20text%20matched%20for%0aa%20particular%20subrule">Do not assume that %item contains an array ref of all text matched for
+a particular subrule
+
+</A></LI>
+</UL>
+<LI><A HREF="#OTHER%20Parse%3a%3aRecDescent%20QUESTIONS">OTHER Parse::RecDescent QUESTIONS
+
+
+</A></LI>
+<UL>
+<LI><A HREF="#Matching%20line%20continuation%20characters">Matching line continuation characters
+
+</A></LI>
+<LI><A HREF="#How%20can%20I%20match%20parenthetical%20expressions%20to%20arbitrary%20depth%3f">How can I match parenthetical expressions to arbitrary depth?
+
+</A></LI>
+<LI><A HREF="#Switching%20out%20of%20first-match-wins%20mode">Switching out of first-match-wins mode
+
+</A></LI>
+<LI><A HREF="#I'm%20having%20problems%20with%20the%20inter-token%20separator%3a">I'm having problems with the inter-token separator:
+
+</A></LI>
+<LI><A HREF="#Matching%20blank%20lines">Matching blank lines
+
+</A></LI>
+<LI><A HREF="#Error%20handling">Error handling
+
+</A></LI>
+<LI><A HREF="#How%20can%20I%20get%20at%20the%20text%20remaining%20to%20be%20parsed%3f">How can I get at the text remaining to be parsed?
+
+</A></LI>
+<LI><A HREF="#You%20don't%20escape%20Perl%20symbols%20in%20your%20grammars.%20Why%20did%20I%20have%20to%3f">You don't escape Perl symbols in your grammars. Why did I have to?
+
+</A></LI>
+<LI><A HREF="#Other%20modules%20appear%20to%20not%20work%20when%20used%20with%20P%3a%3aRD">Other modules appear to not work when used with P::RD
+
+</A></LI>
+</UL>
+<LI><A HREF="#Programming%20Topics%20Germane%20to%20Parse%3a%3aRecDescent%20Use">Programming Topics Germane to Parse::RecDescent Use
+
+</A></LI>
+<UL>
+<LI><A HREF="#Double%20vs%20Single-quoted%20strings">Double vs Single-quoted strings
+
+
+</A></LI>
+<LI><A HREF="#Tracking%20text%20parsed%20between%20phases%20of%20the%20parse">Tracking text parsed between phases of the parse
+
+
+</A></LI>
+<LI><A HREF="#Unconditionally%20listifying%20scalars">Unconditionally listifying scalars
+
+</A></LI>
+<LI><A HREF="#A%20tutorial%20on%20Shallow%20versus%20Deep%20Copying">A tutorial on Shallow versus Deep Copying 
+
+</A></LI>
+<LI><A HREF="#Apparent%2c%20but%20not%20really%20deep%20copying%3a%20%20my%20(%40list)%20%3d%20%40%7b%5b%40%7b%24_%5b0%5d%7d%5d%7d%3b">Apparent, but not really deep copying:  my (@list) = @{[@{$_[0]}]};
+
+</A></LI>
+</UL>
+<LI><A HREF="#SEE%20ALSO">SEE ALSO
+
+</A></LI>
+<LI><A HREF="#AUTHOR">AUTHOR
+
+</A></LI>
 </UL>
 <HR>
 <H1><A NAME="NAME">NAME
@@ -26,9 +165,12 @@
 
 <P>Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
 
-</P><H1><A NAME="IGNORABLE%20TOKENS%20(e.g.%20C%20comments)">IGNORABLE TOKENS (e.g. C comments)
+</P><H1><A NAME="IGNORABLE%20TOKENS">IGNORABLE TOKENS 
 
 </A></H1>
+<H2><A NAME="Removing%20C%20comments">Removing C comments
+
+</A></H2>
 
 <P>Since there is no separate lexer in recdescent. And it is top down. Is
 there anyway to deal w/ removing C comments that could be anywhere.
@@ -47,6 +189,66 @@ there anyway to deal w/ removing C comments that could be anywhere.
 <PRE>	program: &lt;skip: qr{\s* (/[*] .*? [*]/ \s*)*}x&gt; statement(s)</PRE>
 
 <PRE>	statement: # etc...</PRE>
+</DD>
+</DL>
+<H1><A NAME="NEWLINE%20PROCESSING">NEWLINE PROCESSING
+
+</A></H1>
+<H2><A NAME="As%20end%20of%20line">As end of line
+
+
+
+</A></H2>
+
+<P>I'm trying to parse a text line by line using Parse::RecDescent. Each
+line is terminated by a &quot;\n&quot;.
+
+</P>
+<P>Although the task setting up a grammar for this case is straightforward
+the following program doesn't
+produce any results.
+
+
+</P>
+<PRE>     use Parse::RecDescent;</PRE>
+
+<PRE>     $grammar =
+     q{
+         line:       word(s) newline { print &quot;Found a line\n&quot;; }
+         word:       /\w+/
+         newline : /\n/
+     };</PRE>
+
+<PRE>     $parse = new Parse::RecDescent ($grammar);
+</PRE>
+
+<PRE>     $data =
+     qq(This is line one\nAnd this is line two\n);</PRE>
+
+<PRE>     $parse-&gt;line($data);
+</PRE>
+
+<P>RecDescent doesn't recognize the newlines. Does anybody know what I'm
+getting wrong?
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Damian">* Answer by Damian
+
+
+
+</A></DT>
+<DD>
+
+<P>By default, P::RD skips all whitespace (*including* newlines) before
+tokens. 
+
+</P>
+<P>Try this instead:
+
+</P>
+<PRE>         line:    &lt;skip: qr/[ \t]*/&gt; word(s) newline 
+				{ print &quot;Found a line\n&quot;; }
+         word:    /\w+/
+         newline: /\n/</PRE>
 </DD>
 </DL>
 <H1><A NAME="COLUMN-ORIENTED%20PROCESSING">COLUMN-ORIENTED PROCESSING
@@ -151,116 +353,56 @@ and is guaranteed to make a production fail immediately.
 
 </P>
 <PRE>   line: word '' { $thiscolumn == 22 || undef } word </PRE>
-<H1><A NAME="Parse%3a%3aRecDescent%20Questions">Parse::RecDescent Questions
+</DD>
+</DL>
+<H1><A NAME="MODULAR%20%2f%20GENERATIVE%20%2f%20CREATIVE%20%2f%20HAIRY%20PARSING">MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
 
 </A></H1>
-<H2><A NAME="Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
+<H2><A NAME="Calling%20a%20parser%20within%20a%20grammar">Calling a parser within a grammar
 
 </A></H2>
 
-<P>Take a look at Parse::RecDescent's precompilation option
-
-</P><H2><A NAME="Capturing%20whitespace%20between%20tokens">Capturing whitespace between tokens
-
-</A></H2>
-
-<P>I need to capture the whitespace between tokens using Parse::RecDescent.
-I've tried modifying the $skip expression to // or /\b/ (so I can tokenize
-whitespace), but that doesn't seem to have the desired effect.
+<P>I have a script that uses Parse::RecDescent, in which I want to define 2
+parsers. The grammar for the second parser has to call the first parser.
 
 </P>
-<P>Just having a variable where all skipped whitespace is stored would be
-sufficient.
+<P>Can I do this?
 
-</P>
-<P>Does anybody know how to trick Parse::RecDescent into doing this?
-
-</P><DL><DT><A NAME="*%20Answer%20by%20Damian%20Conway">* Answer by Damian Conway
+</P><DL><DT><A NAME="*%20yes%2c%20here's%20an%20example">* yes, here's an example
 
 </A></DT>
 <DD>
 
-<P>To turn off whitespace skipping so I can handle it manually, I always use:
-
-</P>
-<PRE>	&lt;skip:''&gt;</PRE>
-
-<P>See:
-
-</P>
-<PRE>	demo_decomment.pl
-	demo_embedding.pl
-	demo_textgen.pl</PRE>
-
-<P>for examples.
-
-</P></DD>
-</DL>
-<H2><A NAME="Matching%20line%20continuation%20characters">Matching line continuation characters
-
-</A></H2>
-
-<P>I need to parse a grammar that includes line continuation
-characters.  For example:
-
-</P>
-<PRE> // COMMAND ARG1-VALUE,ARG2-VALUE, +
-    ARG3-VALUE,ARG4-VALUE, +
-    EVEN-MORE-ARGS
- // ANOTHERCOMMAND
- * and a comment
- * or two</PRE>
-
-<P>How do I formulate a rule (or rules) to treat the first command
-as if all 5 arguments were specified on a single line?  I need to
-skip over the /\s*+\n\s*/ sequence.  It seems like skip or resync
-should do this for me, but if so, I haven't discovered the
-correct technique, yet.
-
-
-
-</P><DL><DT><A NAME="*%20Answer%20by%20Damian%20Conway">* Answer by Damian Conway
-
-</A></DT>
-<DD>
-
-<PRE> use Parse::RecDescent;
+<PRE> 
+ #!/usr/local/bin/perl -w
+ use strict;
+ use Parse::RecDescent;
  
- my @lines = &lt;&lt; 'EOINST';
- // COMMAND ARG1-VALUE,ARG2-VALUE, +
-    ARG3-VALUE,ARG4-VALUE, +
-    EVEN-MORE-ARGS
- // ANOTHERCOMMAND
- * and a comment
- * or two
- EOINST
+ $::RD_ERRORS = 1;
+ $::RD_WARN = 1;
+ $::RD_HINT = 1;
  
- my $parse = Parse::RecDescent-&gt;new(join '', &lt;DATA&gt;) or die &quot;Bad Grammar!&quot;;
+ our $text_to_parse = &quot;&quot;;
  
- use Data::Dumper 'Dumper';
- print Dumper [
- $parse-&gt;Instructions(&quot;@lines&quot;) or die &quot;NOT parsable!!\n&quot;
- ];
+ my $grammar1 = q{
+ [...]
+ }
  
- __DATA__
+ our $inner_parser = new Parse::RecDescent($grammar1);
  
- Instructions: command(s)
+ my $grammar2 = q{
+ [...]
  
- command: multiline_command
-        | singleline_command
-        | comment
+ rule: TEXT
+ 	{
+ 	  $text_to_parse = $item{TEXT};
+           if (defined $text_to_parse) { print &quot;executing inner parse...\n&quot;; }
+           my $p_text = $inner_parser-&gt;startrule($text_to_parse);
+ 	}
  
- singleline_command: 
- 	'//'  /.*/
- 		{ {command =&gt; $item[-1]} }
+ [...]
  
- multiline_command:  
- 	'//' /(.*?[+][ \t]*\n)+.*/
- 		{ $item[-1] =~ s/[+][ \t]*\n//g; {command =&gt; $item[-1]} }
- 
- comment:
- 	'*'  /.*/
- 		{ {comment =&gt; $item[-1]} }
+ }
  
 </PRE>
 </DD>
@@ -358,6 +500,373 @@ with a grammar that's way more elegant and efficient...)
  expr : /!?/ term
  
  term : ident '(' meaning ')' | ident</PRE>
+</DD>
+</DL>
+<H1><A NAME="CLEANING%20UP%20YOUR%20GRAMMARS">CLEANING UP YOUR GRAMMARS
+
+</A></H1>
+
+<P>In honor of the original (and greatest) Perl book on cleaning up your
+Perl code, this section is written in the style of 
+Joseph Hall's &quot;Effective Perl Programming&quot;
+
+</P><H2><A NAME="Use%20repetition%20modifiers%20with%20a%20separator%20pattern%20to%20match%0aCSV-like%20data">Use repetition modifiers with a separator pattern to match
+CSV-like data
+
+</A></H2>
+
+<P>The intuitive to match CSV data is this:
+
+</P>
+<PRE> CSVLine:
+      NonFinalToken(s?) QuotedText
+ NonFinalToken: 
+      QuotedText Comma
+      { $return = $item[1] }</PRE>
+
+<P>or, in other (merlyn's) words, &quot;many comma terminated items followed by
+one standalone item&quot;.
+
+</P>
+<P>Instead, take the approach shown by merlyn:
+
+</P>
+<PRE> CSVLine: QuotedText(s Comma) { use Data::Dumper; Dumper($item[1]) }</PRE>
+
+<P>Then just define <CODE>QuotedText</CODE>, <CODE>Comma</CODE>, and you're done!
+
+</P><H1><A NAME="OPTIMIZING%20YOUR%20GRAMMARS">OPTIMIZING YOUR GRAMMARS
+
+</A></H1>
+<H2><A NAME="Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
+
+</A></H2>
+
+<P>Take a look at Parse::RecDescent's precompilation option
+
+</P><H2><A NAME="Parse%3a%3aRecDescent%20is%20slow%20on%20Really%20Big%20Files.%20How%20can%20I%20speed%20it%20up%3f">Parse::RecDescent is slow on Really Big Files. How can I speed it up?
+
+</A></H2>
+<DL><DT><A NAME="*%20Reduce%20the%20%22depth%22%20of%20the%20grammar.%20Use%20fewer%20levels%0aof%20nested%20subrules.">* Reduce the &quot;depth&quot; of the grammar. Use fewer levels
+of nested subrules.
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="*%20Where%20possible%2c%20use%20regex%20terminals%20instead%20of%20subrules.%20%20For%20%0aexample%2c%20instead%20of%3a">* Where possible, use regex terminals instead of subrules.  For 
+example, instead of:
+
+</A></DT>
+<DD>
+
+<PRE>		string: '&quot;' char(s?) '&quot;'</PRE>
+
+<PRE>		char:   /[^&quot;\\]/
+		    |   '\\&quot;'
+		    |   '\\\\'</PRE>
+
+<P>write:
+
+</P>
+<PRE>		string: /&quot;([^&quot;\\]|\\[&quot;\\])*&quot;/</PRE>
+</DD>
+<DT><A NAME="*%20Where%20possible%2c%20use%20string%20terminals%20instead%20of%20regexes.">* Where possible, use string terminals instead of regexes.
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="*%20Use%20repetitions%20or%20%3cleftop%3e%2f%3crightop%3e%20instead%20of%20recursion.">* Use repetitions or &lt;leftop&gt;/&lt;rightop&gt; instead of recursion.
+
+</A></DT>
+<DD>
+
+<P>For example, instead of:
+
+</P>
+<PRE>		list:  '(' elems ')'
+		elems: elem ',' elems
+		     | elem</PRE>
+
+<P>write:
+
+</P>
+<PRE>		list: '(' &lt;leftop: elem ',' elem&gt; ')'</PRE>
+
+<P>or:
+
+</P>
+<PRE>		list: '('  elem(s /,/)  ')'</PRE>
+</DD>
+<DT><A NAME="*%20Factor%20out%20common%20prefixes%20in%20a%20set%20of%20alternate%20productions.">* Factor out common prefixes in a set of alternate productions.
+
+</A></DT>
+<DD>
+
+<P>For example, instead of:
+		
+		id: name rank serial_num
+		  | name rank hair_colour
+		  | name rank shoe_size
+
+</P>
+<P>write:
+		  
+		id: name rank (serial_num | haircolour | shoe_size)
+
+</P></DD>
+<DT><A NAME="*%20Pre-parse%20the%20input%20somehow%20to%20break%20it%20into%20smaller%20sections.%0aParse%20each%20section%20separately.">* Pre-parse the input somehow to break it into smaller sections.
+Parse each section separately.
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="*%20Precompile%20they%20grammar.%20This%20won't%20speed%20up%20the%20parsing%2c%20but%20it%0awill%20speed%20up%20the%20parser%20construction%20for%20big%20grammars%20(which%0aReally%20Big%20Files%20often%20require).">* Precompile they grammar. This won't speed up the parsing, but it
+will speed up the parser construction for big grammars (which
+Really Big Files often require).
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="*%20Consider%20whether%20you%20would%20be%20better%20porting%20your%20grammar%20to%0aParse%3a%3aYapp%20instead.">* Consider whether you would be better porting your grammar to
+Parse::Yapp instead.
+
+</A></DT>
+<DD>
+</DD>
+</DL>
+<H1><A NAME="CAPTURING%20MATCHES">CAPTURING MATCHES
+
+</A></H1>
+<H2><A NAME="Hey!%20I'm%20getting%20back%20ARRAY(0x355300)%20instead%20of%20what%20I%20set%20%24return%20to!">Hey! I'm getting back ARRAY(0x355300) instead of what I set $return to!
+
+</A></H2>
+
+<P>Here's a prime example of when this mistake is made:
+
+</P>
+<PRE> QuotedText: 
+       DoubleQuote TextChar(s?) DoubleQuote
+       { my $chars = scalar(@item) - 1;  
+         $return = join ('', @item[2..$chars]) }</PRE>
+
+<P>This rule is incorrectly written. The author thinks that <CODE>@item</CODE> will
+have one <CODE>TextChar</CODE> from position 2 until all <CODE>TextChar</CODE>s are matched.
+However, the true structure of <CODE>@item</CODE> is:
+
+</P><DL><DT><A NAME="position%20one%3a%20the%20string%20matched%20by%20rule%20DoubleQuote">position one: the string matched by rule DoubleQuote
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="position%20two%3a%20array%20reference%20representing%20parse%20tree%20for%20TextChar(s%3f)">position two: array reference representing parse tree for TextChar(s?)
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="position%20three%3a%20the%20string%20matched%20by%20rule%20DoubleQuote">position three: the string matched by rule DoubleQuote
+
+</A></DT>
+<DD>
+</DD>
+</DL>
+
+<P>Note that position two is an array reference. So the rule must be
+rewritten in this way.
+
+</P>
+<PRE> QuotedText: 
+       DoubleQuote TextChar(s?) DoubleQuote
+       { $return = join ( '', @{$item[2]} ) }
+     </PRE>
+<H2><A NAME="Getting%20text%20from%20subrule%20matches">Getting text from subrule matches
+
+</A></H2>
+
+<P>I can't seem to get the text from my subrule matches...
+
+</P>
+<P>Your problem is in this rule:
+
+</P>
+<PRE>    tuple : (number dot)(2)</PRE>
+
+<P>is the same as:
+
+</P>
+<PRE>    tuple        : anon_subrule(2)</PRE>
+
+<PRE>    anon_subrule : number dot</PRE>
+
+<P>Like all subrules, this anonymous subrule returns only its last item
+(namely, the dot). If you want just the number back, write this:
+
+</P>
+<PRE>    tuple : (number dot {$item[1]})(2)</PRE>
+
+<P>If you want both number and dot back (in a nested array), write this:
+
+</P>
+<PRE>    tuple : (number dot {\@item})(2)</PRE>
+<H2><A NAME="Capturing%20whitespace%20between%20tokens">Capturing whitespace between tokens
+
+</A></H2>
+
+<P>I need to capture the whitespace between tokens using Parse::RecDescent.
+I've tried modifying the $skip expression to // or /\b/ (so I can tokenize
+whitespace), but that doesn't seem to have the desired effect.
+
+</P>
+<P>Just having a variable where all skipped whitespace is stored would be
+sufficient.
+
+</P>
+<P>Does anybody know how to trick Parse::RecDescent into doing this?
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Damian%20Conway">* Answer by Damian Conway
+
+</A></DT>
+<DD>
+
+<P>To turn off whitespace skipping so I can handle it manually, I always use:
+
+</P>
+<PRE>	&lt;skip:''&gt;</PRE>
+
+<P>See:
+
+</P>
+<PRE>	demo_decomment.pl
+	demo_embedding.pl
+	demo_textgen.pl</PRE>
+
+<P>for examples.
+
+</P></DD>
+</DL>
+<H2><A NAME="My%20grammar%20is%20not%20returning%20any%20data!">My grammar is not returning any data! 
+
+</A></H2>
+
+<P>What's wrong?!
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Brent%20Dax%3a">* Answer by Brent Dax:
+
+</A></DT>
+<DD>
+
+<P>This is a clue; either something is wrong with your actions or the
+grammar isn't parsing the data correctly. Try adding 
+  | &lt;error&gt; 
+
+</P>
+<P>clauses
+to the end of each top-level rule. This will tell you if there's a
+parsing error, and possibly what the error is. If this doesn't show
+anything, look hard at the actions. You may want to explicitly set the
+$return variable in the actions.   
+
+</P></DD>
+</DL>
+<H1><A NAME="THINGS%20NOT%20TO%20DO">THINGS NOT TO DO
+
+</A></H1>
+<H2><A NAME="Do%20not%20follow%20%3cresync%3e%20with%20%3creject%3e%20to%20skip%20errors">Do not follow &lt;resync&gt; with &lt;reject&gt; to skip errors
+
+</A></H2>
+
+<P><CODE>resync</CODE> is used to allow a rule which would normally fail to &quot;pass&quot; so that 
+parsing can continue. If you add the reject, then it unconditionally fails.
+
+</P><H2><A NAME="Do%20not%20assume%20that%20%25item%20contains%20an%20array%20ref%20of%20all%20text%20matched%20for%0aa%20particular%20subrule">Do not assume that %item contains an array ref of all text matched for
+a particular subrule
+
+</A></H2>
+
+<P>For example: 
+
+</P>
+<PRE>        range: '(' number '..' number )'
+                        { $return = $item{number} }</PRE>
+
+<P>will return only the value corresponding to the last match of the <CODE>number</CODE>
+subrule.
+
+</P>
+<P>To get each value for the number subrule, you have a couple of choices,
+both documented in the Parse::RecDescent manpage under
+<CODE>@item and %item</CODE>.
+
+</P><H1><A NAME="OTHER%20Parse%3a%3aRecDescent%20QUESTIONS">OTHER Parse::RecDescent QUESTIONS
+
+
+</A></H1>
+<H2><A NAME="Matching%20line%20continuation%20characters">Matching line continuation characters
+
+</A></H2>
+
+<P>I need to parse a grammar that includes line continuation
+characters.  For example:
+
+</P>
+<PRE> // COMMAND ARG1-VALUE,ARG2-VALUE, +
+    ARG3-VALUE,ARG4-VALUE, +
+    EVEN-MORE-ARGS
+ // ANOTHERCOMMAND
+ * and a comment
+ * or two</PRE>
+
+<P>How do I formulate a rule (or rules) to treat the first command
+as if all 5 arguments were specified on a single line?  I need to
+skip over the /\s*+\n\s*/ sequence.  It seems like skip or resync
+should do this for me, but if so, I haven't discovered the
+correct technique, yet.
+
+
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Damian%20Conway">* Answer by Damian Conway
+
+</A></DT>
+<DD>
+
+<PRE> use Parse::RecDescent;
+ 
+ my @lines = &lt;&lt; 'EOINST';
+ // COMMAND ARG1-VALUE,ARG2-VALUE, +
+    ARG3-VALUE,ARG4-VALUE, +
+    EVEN-MORE-ARGS
+ // ANOTHERCOMMAND
+ * and a comment
+ * or two
+ EOINST
+ 
+ my $parse = Parse::RecDescent-&gt;new(join '', &lt;DATA&gt;) or die &quot;Bad Grammar!&quot;;
+ 
+ use Data::Dumper 'Dumper';
+ print Dumper [
+ $parse-&gt;Instructions(&quot;@lines&quot;) or die &quot;NOT parsable!!\n&quot;
+ ];
+ 
+ __DATA__
+ 
+ Instructions: command(s)
+ 
+ command: multiline_command
+        | singleline_command
+        | comment
+ 
+ singleline_command: 
+ 	'//'  /.*/
+ 		{ {command =&gt; $item[-1]} }
+ 
+ multiline_command:  
+ 	'//' /(.*?[+][ \t]*\n)+.*/
+ 		{ $item[-1] =~ s/[+][ \t]*\n//g; {command =&gt; $item[-1]} }
+ 
+ comment:
+ 	'*'  /.*/
+ 		{ {comment =&gt; $item[-1]} }
+ 
+</PRE>
 </DD>
 </DL>
 <H2><A NAME="How%20can%20I%20match%20parenthetical%20expressions%20to%20arbitrary%20depth%3f">How can I match parenthetical expressions to arbitrary depth?
@@ -518,35 +1027,6 @@ back
 
 </P></DD>
 </DL>
-<H2><A NAME="Getting%20text%20from%20subrule%20matches">Getting text from subrule matches
-
-</A></H2>
-
-<P>I can't seem to get the text from my subrule matches...
-
-</P>
-<P>Your problem is in this rule:
-
-</P>
-<PRE>    tuple : (number dot)(2)</PRE>
-
-<P>is the same as:
-
-</P>
-<PRE>    tuple        : anon_subrule(2)</PRE>
-
-<PRE>    anon_subrule : number dot</PRE>
-
-<P>Like all subrules, this anonymous subrule returns only its last item
-(namely, the dot). If you want just the number back, write this:
-
-</P>
-<PRE>    tuple : (number dot {$item[1]})(2)</PRE>
-
-<P>If you want both number and dot back (in a nested array), write this:
-
-</P>
-<PRE>    tuple : (number dot {\@item})(2)</PRE>
 <H2><A NAME="Matching%20blank%20lines">Matching blank lines
 
 </A></H2>
@@ -643,30 +1123,6 @@ it saw '#atlantis' or 'attack' (because then you are committed).
 
 </P></DD>
 </DL>
-<H2><A NAME="My%20grammar%20is%20not%20returning%20any%20data!">My grammar is not returning any data! 
-
-</A></H2>
-
-<P>What's wrong?!
-
-</P><DL><DT><A NAME="*%20Answer%20by%20Brent%20Dax%3a">* Answer by Brent Dax:
-
-</A></DT>
-<DD>
-
-<P>This is a clue; either something is wrong with your actions or the
-grammar isn't parsing the data correctly. Try adding 
-  | &lt;error&gt; 
-
-</P>
-<P>clauses
-to the end of each top-level rule. This will tell you if there's a
-parsing error, and possibly what the error is. If this doesn't show
-anything, look hard at the actions. You may want to explicitly set the
-$return variable in the actions.   
-
-</P></DD>
-</DL>
 <H2><A NAME="How%20can%20I%20get%20at%20the%20text%20remaining%20to%20be%20parsed%3f">How can I get at the text remaining to be parsed?
 
 </A></H2>
@@ -748,37 +1204,7 @@ change things like this:
 <PRE>          {
           local $/;
           }</PRE>
-<H1><A NAME="THINGS%20NOT%20TO%20DO">THINGS NOT TO DO
-
-</A></H1>
-<H2><A NAME="Do%20not%20follow%20%3cresync%3e%20with%20%3creject%3e%20to%20skip%20errors">Do not follow &lt;resync&gt; with &lt;reject&gt; to skip errors
-
-</A></H2>
-
-<P><CODE>resync</CODE> is used to allow a rule which would normally fail to &quot;pass&quot; so that 
-parsing can continue. If you add the reject, then it unconditionally fails.
-
-</P><H2><A NAME="Do%20not%20assume%20that%20%25item%20contains%20an%20array%20ref%20of%20all%20text%20matched%20for%0aa%20particular%20subrule">Do not assume that %item contains an array ref of all text matched for
-a particular subrule
-
-</A></H2>
-
-<P>For example: 
-
-</P>
-<PRE>        range: '(' number '..' number )'
-                        { $return = $item{number} }</PRE>
-
-<P>will return only the value corresponding to the last match of the <CODE>number</CODE>
-subrule.
-
-</P>
-<P>To get each value for the number subrule, you have a couple of choices,
-both documented in the Parse::RecDescent manpage under
-<CODE>@item and %item</CODE>.
-
-
-</P><H1><A NAME="Programming%20Topics%20Germane%20to%20Parse%3a%3aRecDescent%20Use">Programming Topics Germane to Parse::RecDescent Use
+<H1><A NAME="Programming%20Topics%20Germane%20to%20Parse%3a%3aRecDescent%20Use">Programming Topics Germane to Parse::RecDescent Use
 
 </A></H1>
 <H2><A NAME="Double%20vs%20Single-quoted%20strings">Double vs Single-quoted strings
@@ -1271,7 +1697,26 @@ single expression.
 <H1><A NAME="SEE%20ALSO">SEE ALSO
 
 </A></H1>
-<DL><DT><A NAME="*%20Parse%3a%3aYAPP">* Parse::YAPP
+<DL><DT><A NAME="*%20Parse%3a%3aRecdescent%20tutorial%20at%20www.perl.com">* Parse::Recdescent tutorial at www.perl.com
+
+</A></DT>
+<DD>
+http://www.perl.com/pub/a/2001/06/13/recdecent.html
+
+</DD>
+<DT><A NAME="*%20py">* py
+
+</A></DT>
+<DD>
+
+<P>py, which I assume is short for <CODE>parse yacc</CODE>, is a program by
+Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
+
+</P>
+<P>It is obtainable from http://perl.plover.com/py/
+
+</P></DD>
+<DT><A NAME="*%20Parse%3a%3aYAPP">* Parse::YAPP
 
 </A></DT>
 <DD>
@@ -1313,17 +1758,15 @@ A useful site to get fast help on Perl.
 
 </A></H1>
 
-<P>The author of this FAQ is Terrence Brannon &lt;tbone@cpan.org&gt;. 
+<P>The author of Parse::RecDescent::FAQ is Terrence Brannon &lt;tbone@cpan.org&gt;. 
 
 </P>
-<P>The author of Parse::RecDescent 
-is Damian Conway. I asked him if he wanted to make this the official FAQ
-for P::RD, but he did not reply. Sigh.
+<P>The author of Parse::RecDescent is Damian Conway. 
 
 </P>
 <P>The (unwitting) contributors to this FAQ
 
-</P><DL><DT><A NAME="*%20Me%2c%20the%20FAQ%20author%2c%20Terrence%20Brannon">* Me, the FAQ author, Terrence Brannon
+</P><DL><DT><A NAME="*%20Me">* Me
 
 </A></DT>
 <DD>
@@ -1343,7 +1786,7 @@ for P::RD, but he did not reply. Sigh.
 </A></DT>
 <DD>
 </DD>
-<DT><A NAME="*%20Randal%20L.%20Schwartz%2c%20Perl%20hacker">* Randal L. Schwartz, Perl hacker
+<DT><A NAME="*%20Randal%20L.%20Schwartz%20(merlyn)%2c%20Perl%20hacker">* Randal L. Schwartz (merlyn), Perl hacker
 
 </A></DT>
 <DD>
@@ -1357,8 +1800,6 @@ for P::RD, but he did not reply. Sigh.
 
 </A></DT>
 <DD>
-</DD>
-</DL>
 </DD>
 </DL>
 
