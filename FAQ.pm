@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.17 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.19 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -1864,8 +1864,8 @@ list of string.
 =head2 Shallow versus Deep Copying 
 
 =head3 An article by Randal Schwartz
-
-    L<http://www.stonehenge.com/merlyn/UnixReview/col30.html>
+    
+    http://www.stonehenge.com/merlyn/UnixReview/col30.html
 
 =head3 A tutorial written by Philip Newton <nospam.newton@gmx.li>
 
@@ -2278,7 +2278,7 @@ Useful sites to get fast help on Perl.
 
 =head2 Publications
 
-=head3 Parse::Recdescent tutorial at www.perl.com
+=head3 "Parse::Recdescent Tutorial", www.perl.com, 6/13/2001, Jeffrey Goff
 
 L<http://www.perl.com/pub/a/2001/06/13/recdecent.html>
 
