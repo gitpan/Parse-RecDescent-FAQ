@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.31 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.32 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -30,6 +30,15 @@ Also see the "Left-recursion" section under "PARSER BEHAVIOR"
 =head1 DEBUGGING
 
 =head1 PARSER BEHAVIOR
+
+=head2 Skipping over things
+
+The variable
+
+  $Parse::RecDescent::skip 
+
+is what you need. It takes strings and C<qr>-quoted regular expressions.
+See the Parse::RecDescent docs for details.
 
 =head2 Left-recursion
 

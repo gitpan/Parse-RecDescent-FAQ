@@ -13,7 +13,7 @@ echo
 cp ~/bin/tt.pl .
 ~/bin/tt.pl FAQ.tt
 mv FAQ.tt-out FAQ.pm
-perl Makefile.PL PREFIX=$PREFIX
+perl Makefile.PL PREFIX=$PERL
 rm *.tar.gz
 make tardist
 pause *.tar.gz
