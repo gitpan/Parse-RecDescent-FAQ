@@ -262,6 +262,30 @@ CSV-like data
     Then just define `QuotedText', `Comma', and you're done!
 
 OPTIMIZING YOUR GRAMMARS
+  Eliminate backtracking when possible
+
+    Let's take a look at two computationally equivalent grammars:
+
+     expression      :       unary_expr PLUS_OP expression
+                     |       unary_expr
+
+    versus
+
+     expression      :       unary_expr plus_expression
+     plus_expression :       PLUS_OP expression
+                     |       # nothing
+
+    The second one is more efficient because it does not have to do
+    backtracking.
+
+    The first one is more readable and more maintainable though. It is more
+    readable because it doesnt have an empty rule. It is more maintainable
+    because as you add more expression types (minus_expression,
+    mult_expression...) you don't have to add an empty rule to each of them.
+    The top level description scales without change.
+
+    But, if speed is what you want then the second one is the way to go.
+
   Precompiling Grammars for Speed of Execution
 
     Take a look at Parse::RecDescent's precompilation option
@@ -423,6 +447,15 @@ a particular subrule
     To get each value for the number subrule, you have a couple of choices,
     both documented in the Parse::RecDescent manpage under `@item and
     %item'.
+
+  Don't use $::RD_AUTOACTION to print while you are parsing
+
+    You can't print out your result while you are parsing it, because you
+    can't "unprint" a backtrack.
+
+    Instead, have the final top-level rule do all the diagnostic printing,
+    or alternatively use P::RD's tracing functionality to observe parsing in
+    action.
 
 OTHER Parse::RecDescent QUESTIONS
   Matching line continuation characters
@@ -1159,3 +1192,4 @@ AUTHOR
     * Randal L. Schwartz (merlyn), Perl hacker
     * lhoward of Perlmonks
     * Matthew Wickline
+    * Gwynn Judd

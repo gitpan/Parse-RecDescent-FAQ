@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.6 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.8 $ =~ /Revision:\s+(.*)\s+/ ;
 
 
 1;
@@ -336,6 +336,29 @@ Then just define C<QuotedText>, C<Comma>, and you're done!
 
 =head1 OPTIMIZING YOUR GRAMMARS
 
+=head2 Eliminate backtracking when possible
+
+Let's take a look at two computationally equivalent grammars:
+
+ expression      :       unary_expr PLUS_OP expression
+                 |       unary_expr
+
+versus
+
+ expression      :       unary_expr plus_expression
+ plus_expression :       PLUS_OP expression
+                 |       # nothing
+
+The second one is more efficient because it does not have to do backtracking.
+
+The first one is more readable and more maintainable though. It is more 
+readable because it doesnt have an empty rule. It is more maintainable because
+as you add more expression types (minus_expression,
+mult_expression...) you don't have to add an empty rule to each of
+them. The top level description scales without change.
+
+But, if speed is what you want then the second one is the way to go. 
+
 =head2 Precompiling Grammars for Speed of Execution
 
 Take a look at Parse::RecDescent's precompilation option
@@ -535,6 +558,17 @@ subrule.
 To get each value for the number subrule, you have a couple of choices,
 both documented in the Parse::RecDescent manpage under
 C<@item and %item>.
+
+=head2 Don't use $::RD_AUTOACTION to print while you are parsing
+
+You can't print out your result while you are parsing it, because you
+can't "unprint" a backtrack.
+
+Instead, have the final top-level rule do all the diagnostic printing, or
+alternatively use P::RD's tracing functionality to observe parsing in 
+action.
+
+
 
 =head1 OTHER Parse::RecDescent QUESTIONS
 
@@ -1417,6 +1451,8 @@ The (unwitting) contributors to this FAQ
 =item * lhoward of Perlmonks
 
 =item * Matthew Wickline
+
+=item * Gwynn Judd
 
 =back 
 

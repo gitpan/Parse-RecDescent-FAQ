@@ -60,6 +60,9 @@ CSV-like data
 
 </A></LI>
 <UL>
+<LI><A HREF="#Eliminate%20backtracking%20when%20possible">Eliminate backtracking when possible
+
+</A></LI>
 <LI><A HREF="#Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
 
 </A></LI>
@@ -93,6 +96,9 @@ CSV-like data
 </A></LI>
 <LI><A HREF="#Do%20not%20assume%20that%20%25item%20contains%20an%20array%20ref%20of%20all%20text%20matched%20for%0aa%20particular%20subrule">Do not assume that %item contains an array ref of all text matched for
 a particular subrule
+
+</A></LI>
+<LI><A HREF="#Don't%20use%20%24%3a%3aRD_AUTOACTION%20to%20print%20while%20you%20are%20parsing">Don't use $::RD_AUTOACTION to print while you are parsing
 
 </A></LI>
 </UL>
@@ -538,7 +544,36 @@ one standalone item&quot;.
 </P><H1><A NAME="OPTIMIZING%20YOUR%20GRAMMARS">OPTIMIZING YOUR GRAMMARS
 
 </A></H1>
-<H2><A NAME="Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
+<H2><A NAME="Eliminate%20backtracking%20when%20possible">Eliminate backtracking when possible
+
+</A></H2>
+
+<P>Let's take a look at two computationally equivalent grammars:
+
+</P>
+<PRE> expression      :       unary_expr PLUS_OP expression
+                 |       unary_expr</PRE>
+
+<P>versus
+
+</P>
+<PRE> expression      :       unary_expr plus_expression
+ plus_expression :       PLUS_OP expression
+                 |       # nothing</PRE>
+
+<P>The second one is more efficient because it does not have to do backtracking.
+
+</P>
+<P>The first one is more readable and more maintainable though. It is more 
+readable because it doesnt have an empty rule. It is more maintainable because
+as you add more expression types (minus_expression,
+mult_expression...) you don't have to add an empty rule to each of
+them. The top level description scales without change.
+
+</P>
+<P>But, if speed is what you want then the second one is the way to go. 
+
+</P><H2><A NAME="Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
 
 </A></H2>
 
@@ -795,6 +830,20 @@ subrule.
 <P>To get each value for the number subrule, you have a couple of choices,
 both documented in the Parse::RecDescent manpage under
 <CODE>@item and %item</CODE>.
+
+</P><H2><A NAME="Don't%20use%20%24%3a%3aRD_AUTOACTION%20to%20print%20while%20you%20are%20parsing">Don't use $::RD_AUTOACTION to print while you are parsing
+
+</A></H2>
+
+<P>You can't print out your result while you are parsing it, because you
+can't &quot;unprint&quot; a backtrack.
+
+</P>
+<P>Instead, have the final top-level rule do all the diagnostic printing, or
+alternatively use P::RD's tracing functionality to observe parsing in 
+action.
+
+
 
 </P><H1><A NAME="OTHER%20Parse%3a%3aRecDescent%20QUESTIONS">OTHER Parse::RecDescent QUESTIONS
 
@@ -1797,6 +1846,11 @@ A useful site to get fast help on Perl.
 <DD>
 </DD>
 <DT><A NAME="*%20Matthew%20Wickline">* Matthew Wickline
+
+</A></DT>
+<DD>
+</DD>
+<DT><A NAME="*%20Gwynn%20Judd">* Gwynn Judd
 
 </A></DT>
 <DD>
