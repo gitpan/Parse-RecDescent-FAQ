@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.10 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.11 $ =~ /Revision:\s+(.*)\s+/ ;
 
 
 1;
@@ -589,6 +589,82 @@ Instead, have the final top-level rule do all the diagnostic printing, or
 alternatively use P::RD's tracing functionality to observe parsing in 
 action.
 
+=head1 ERROR HANDLING
+
+=head2 In a non-shell (e.g. CGI) environment
+
+I need to parse a file with a parser that I cooked up from
+Parse::Recdescent. 
+My problem, it must work in a cgi environment and the script must be
+able to handle errors. I tried eval, piping, forking, Tie::STDERR, but
+the errors msgs from Parse::Recdescent seem unstoppable.
+
+I can catch them only by redirecting the script's STDERR from the
+shell. But howdo I catch them from within ??
+
+=over 4 
+
+=item * Like this:
+
+        use Parse::RecDescent;
+        open (Parse::RecDescent::ERROR, ">errfile")
+                or die "Can't redirect errors to file 'errfile'";
+
+        # your program here
+
+=back
+
+=head2 Simple Error Handling
+
+I'm trying to write a parser for orders for Atlantis (PBEM game).
+Syntax is pretty simple: one line per command, each command
+starts with name, followed by list of parameters. Basically it's
+something like this (grammar for parsing one line):
+
+ Statement:Comment | Command Comment(?)
+ Comment:/;.*/ 
+ Command:'#atlantis' <commit> FactionID String
+    Command:'attack' <commit> Number(s)
+ ....
+
+However I have problems to make it work as I want:
+
+1) In case of failed parsing (syntax error, not allowey keyword, ...) 
+I want to store error messages in variable (not to be just printed), so I can 
+process them later.
+
+I don't think Parse::RecDescent has a hook for that (Damian, something
+for the todo list?), but you can always install a $SIG {__WARN__}
+handler and process the generated warnings.
+
+2) In case if user types "attack bastards" I want to give him
+error message that "list of numbers expected" instead
+of just saying the "cannot parse this line". The only
+thing that I came up with now was defining every command
+like this:
+ Command:Attack
+ Attack:'attack' AttackParams
+ AttackParams:Number(s) | <error>
+ ...
+Any better solutions?
+
+=over 4
+
+=item * You can just do:
+
+    Command:   '#atlantis' <commit> FactionID String
+       |   'attack' <commit> Number(s)
+       |   <error>
+
+and when you try to parse "attack bastards", you will get:
+
+    ERROR (line 1): Invalid Command: Was expecting Number but found
+        "bastards" instead
+
+You might want to use <error?>, which will only print the error when
+it saw '#atlantis' or 'attack' (because then you are committed).
+
+=back
 
 
 =head1 OTHER Parse::RecDescent QUESTIONS
@@ -836,57 +912,6 @@ do what you want).
 =back
 
 
-=head2 Error handling
-
-I'm trying to write a parser for orders for Atlantis (PBEM game).
-Syntax is pretty simple: one line per command, each command
-starts with name, followed by list of parameters. Basically it's
-something like this (grammar for parsing one line):
-
- Statement:Comment | Command Comment(?)
- Comment:/;.*/ 
- Command:'#atlantis' <commit> FactionID String
-    Command:'attack' <commit> Number(s)
- ....
-
-However I have problems to make it work as I want:
-
-1) In case of failed parsing (syntax error, not allowey keyword, ...) 
-I want to store error messages in variable (not to be just printed), so I can 
-process them later.
-
-I don't think Parse::RecDescent has a hook for that (Damian, something
-for the todo list?), but you can always install a $SIG {__WARN__}
-handler and process the generated warnings.
-
-2) In case if user types "attack bastards" I want to give him
-error message that "list of numbers expected" instead
-of just saying the "cannot parse this line". The only
-thing that I came up with now was defining every command
-like this:
- Command:Attack
- Attack:'attack' AttackParams
- AttackParams:Number(s) | <error>
- ...
-Any better solutions?
-
-=over 4
-
-=item * You can just do:
-
-    Command:   '#atlantis' <commit> FactionID String
-       |   'attack' <commit> Number(s)
-       |   <error>
-
-and when you try to parse "attack bastards", you will get:
-
-    ERROR (line 1): Invalid Command: Was expecting Number but found
-        "bastards" instead
-
-You might want to use <error?>, which will only print the error when
-it saw '#atlantis' or 'attack' (because then you are committed).
-
-=back
 
 
 =head2 How can I get at the text remaining to be parsed?

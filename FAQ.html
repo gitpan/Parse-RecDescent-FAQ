@@ -108,6 +108,17 @@ a particular subrule
 
 </A></LI>
 </UL>
+<LI><A HREF="#ERROR%20HANDLING">ERROR HANDLING
+
+</A></LI>
+<UL>
+<LI><A HREF="#In%20a%20non-shell%20(e.g.%20CGI)%20environment">In a non-shell (e.g. CGI) environment
+
+</A></LI>
+<LI><A HREF="#Simple%20Error%20Handling">Simple Error Handling
+
+</A></LI>
+</UL>
 <LI><A HREF="#OTHER%20Parse%3a%3aRecDescent%20QUESTIONS">OTHER Parse::RecDescent QUESTIONS
 
 
@@ -126,9 +137,6 @@ a particular subrule
 
 </A></LI>
 <LI><A HREF="#Matching%20blank%20lines">Matching blank lines
-
-</A></LI>
-<LI><A HREF="#Error%20handling">Error handling
 
 </A></LI>
 <LI><A HREF="#How%20can%20I%20get%20at%20the%20text%20remaining%20to%20be%20parsed%3f">How can I get at the text remaining to be parsed?
@@ -876,9 +884,96 @@ can't &quot;unprint&quot; a backtrack.
 alternatively use P::RD's tracing functionality to observe parsing in 
 action.
 
+</P><H1><A NAME="ERROR%20HANDLING">ERROR HANDLING
 
+</A></H1>
+<H2><A NAME="In%20a%20non-shell%20(e.g.%20CGI)%20environment">In a non-shell (e.g. CGI) environment
 
-</P><H1><A NAME="OTHER%20Parse%3a%3aRecDescent%20QUESTIONS">OTHER Parse::RecDescent QUESTIONS
+</A></H2>
+
+<P>I need to parse a file with a parser that I cooked up from
+Parse::Recdescent. 
+My problem, it must work in a cgi environment and the script must be
+able to handle errors. I tried eval, piping, forking, Tie::STDERR, but
+the errors msgs from Parse::Recdescent seem unstoppable.
+
+</P>
+<P>I can catch them only by redirecting the script's STDERR from the
+shell. But howdo I catch them from within ??
+
+</P><DL><DT><A NAME="*%20Like%20this%3a">* Like this:
+
+</A></DT>
+<DD>
+
+<PRE>        use Parse::RecDescent;
+        open (Parse::RecDescent::ERROR, &quot;&gt;errfile&quot;)
+                or die &quot;Can't redirect errors to file 'errfile'&quot;;</PRE>
+
+<PRE>        # your program here</PRE>
+</DD>
+</DL>
+<H2><A NAME="Simple%20Error%20Handling">Simple Error Handling
+
+</A></H2>
+
+<P>I'm trying to write a parser for orders for Atlantis (PBEM game).
+Syntax is pretty simple: one line per command, each command
+starts with name, followed by list of parameters. Basically it's
+something like this (grammar for parsing one line):
+
+</P>
+<PRE> Statement:Comment | Command Comment(?)
+ Comment:/;.*/ 
+ Command:'#atlantis' &lt;commit&gt; FactionID String
+    Command:'attack' &lt;commit&gt; Number(s)
+ ....</PRE>
+
+<P>However I have problems to make it work as I want:
+
+</P>
+<P>1) In case of failed parsing (syntax error, not allowey keyword, ...) 
+I want to store error messages in variable (not to be just printed), so I can 
+process them later.
+
+</P>
+<P>I don't think Parse::RecDescent has a hook for that (Damian, something
+for the todo list?), but you can always install a $SIG {__WARN__}
+handler and process the generated warnings.
+
+</P>
+<P>2) In case if user types &quot;attack bastards&quot; I want to give him
+error message that &quot;list of numbers expected&quot; instead
+of just saying the &quot;cannot parse this line&quot;. The only
+thing that I came up with now was defining every command
+like this:
+ Command:Attack
+ Attack:'attack' AttackParams
+ AttackParams:Number(s) | &lt;error&gt;
+ ...
+Any better solutions?
+
+</P><DL><DT><A NAME="*%20You%20can%20just%20do%3a">* You can just do:
+
+</A></DT>
+<DD>
+
+<PRE>    Command:   '#atlantis' &lt;commit&gt; FactionID String
+       |   'attack' &lt;commit&gt; Number(s)
+       |   &lt;error&gt;</PRE>
+
+<P>and when you try to parse &quot;attack bastards&quot;, you will get:
+
+</P>
+<PRE>    ERROR (line 1): Invalid Command: Was expecting Number but found
+        &quot;bastards&quot; instead</PRE>
+
+<P>You might want to use &lt;error?&gt;, which will only print the error when
+it saw '#atlantis' or 'attack' (because then you are committed).
+
+</P></DD>
+</DL>
+<H1><A NAME="OTHER%20Parse%3a%3aRecDescent%20QUESTIONS">OTHER Parse::RecDescent QUESTIONS
 
 
 </A></H1>
@@ -1145,67 +1240,7 @@ not &quot;end of line&quot;. You want:
 Since that's not undef, the rule matches (even though it doesn't
 do what you want).
 
-</P><H2><A NAME="Error%20handling">Error handling
-
-</A></H2>
-
-<P>I'm trying to write a parser for orders for Atlantis (PBEM game).
-Syntax is pretty simple: one line per command, each command
-starts with name, followed by list of parameters. Basically it's
-something like this (grammar for parsing one line):
-
-</P>
-<PRE> Statement:Comment | Command Comment(?)
- Comment:/;.*/ 
- Command:'#atlantis' &lt;commit&gt; FactionID String
-    Command:'attack' &lt;commit&gt; Number(s)
- ....</PRE>
-
-<P>However I have problems to make it work as I want:
-
-</P>
-<P>1) In case of failed parsing (syntax error, not allowey keyword, ...) 
-I want to store error messages in variable (not to be just printed), so I can 
-process them later.
-
-</P>
-<P>I don't think Parse::RecDescent has a hook for that (Damian, something
-for the todo list?), but you can always install a $SIG {__WARN__}
-handler and process the generated warnings.
-
-</P>
-<P>2) In case if user types &quot;attack bastards&quot; I want to give him
-error message that &quot;list of numbers expected&quot; instead
-of just saying the &quot;cannot parse this line&quot;. The only
-thing that I came up with now was defining every command
-like this:
- Command:Attack
- Attack:'attack' AttackParams
- AttackParams:Number(s) | &lt;error&gt;
- ...
-Any better solutions?
-
-</P><DL><DT><A NAME="*%20You%20can%20just%20do%3a">* You can just do:
-
-</A></DT>
-<DD>
-
-<PRE>    Command:   '#atlantis' &lt;commit&gt; FactionID String
-       |   'attack' &lt;commit&gt; Number(s)
-       |   &lt;error&gt;</PRE>
-
-<P>and when you try to parse &quot;attack bastards&quot;, you will get:
-
-</P>
-<PRE>    ERROR (line 1): Invalid Command: Was expecting Number but found
-        &quot;bastards&quot; instead</PRE>
-
-<P>You might want to use &lt;error?&gt;, which will only print the error when
-it saw '#atlantis' or 'attack' (because then you are committed).
-
-</P></DD>
-</DL>
-<H2><A NAME="How%20can%20I%20get%20at%20the%20text%20remaining%20to%20be%20parsed%3f">How can I get at the text remaining to be parsed?
+</P><H2><A NAME="How%20can%20I%20get%20at%20the%20text%20remaining%20to%20be%20parsed%3f">How can I get at the text remaining to be parsed?
 
 </A></H2>
 
