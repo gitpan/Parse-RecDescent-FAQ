@@ -16,4 +16,4 @@ mv FAQ.tt-out FAQ.pm
 perl Makefile.PL PREFIX=$PERL
 rm *.tar.gz
 make tardist
-pause *.tar.gz
+cpan-upload *.tar.gz

@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.35 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.36 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -30,6 +30,64 @@ Also see the "Left-recursion" section under "PARSER BEHAVIOR"
 =head1 DEBUGGING
 
 =head1 PARSER BEHAVIOR
+
+=head2 Backtracking (PRD doesn't do it)
+
+Take the following regex:
+
+  /(aa|a)a/
+
+It will match this text:
+
+  aaa
+
+Now take the following PRD grammar:
+
+ use strict;
+ use warnings;
+ use Parse::RecDescent;
+ 
+ my $grammar = 'startrule: ( "aa" | "a" ) "a"';
+ my $parser  = Parse::RecDescent->new($grammar);
+ my $text    = 'aa';
+ 
+ print defined($parser->startrule($text)) ? "Good!\n" : "Bad!\n";
+
+It *will* print "Bad", meaning that PRD did not match it.
+
+The reason is that the first branch of the alternation matched, then the next subrule failed.
+
+You may ask: is there any way to persuade a top-down parser like P::RD
+to accept the above text as valid? I know that, in this simple
+example, I could easily rewrite the grammar (either by saying 
+
+ ("a" |"aa" ) "a" 
+
+or 
+
+ "aa" a" | "a" "a"
+
+but what I mean is: Is there any
+additional feature I have missed which would allow the grammar as is
+to parse the text successfully? 
+
+To put the question another way, can I get P::RD to behave more like a
+regex engine? After all, even an NFA engine would backtrack to try all
+possible alternatives before failing :-) (Perhaps parsers just do not
+backtrack past individual subrules under any circumstances.) 
+
+And the answer is...
+
+RecDescent parsers do not work that way. They don't backtrack on
+failure; they just fail. Of course, there's nothing to prevent a
+recursive descent parser from incorporating backtracking too, but
+RecDescent doesn't. 
+
+So, if you need backtracking in part of your grammar, you need to use
+plain old regexes there.
+
+
+
 
 =head2 Skipping over things
 
