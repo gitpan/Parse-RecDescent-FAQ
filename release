@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 #!/bin/sh -x
 
@@ -13,8 +13,9 @@ echo
 #cp ~/bin/tt.pl .
 ./tt.pl FAQ.tt
 mv FAQ.tt-out FAQ.pm
+pod2html FAQ.pm > FAQ.html
 perl Makefile.PL PREFIX=$PERL
 rm *.tar.gz
 make tardist
-pod2html FAQ.pm > FAQ.html
+
 
