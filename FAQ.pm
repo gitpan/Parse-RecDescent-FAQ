@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.36 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.37 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -44,6 +44,70 @@ Also see the "Left-recursion" section under "PARSER BEHAVIOR"
 =head1 DEBUGGING
 
 =head1 PARSER BEHAVIOR
+
+=head2 Insuring a top-level rule match
+
+I have a question regarding subrules within grammars used with
+Parse::RecDescent - The following code best illustrates the best test
+case that I can identify which highlights my problem. 
+
+
+
+
+
+Note that with this test code, each of the lines within the __DATA__ section are tested against the grammar and the expected result, either pass or fail, is indicated by the 1 or 0 at the start of the line respectively.
+
+However, despite these expected results, the grammar does not reject
+the lines arg1, and arg1,arg2,, which ideally should be rejected due
+to the incomplete match of the subrule (comma element) - In these
+cases, a trace shows that the subrule terminal comma is matched and
+consumed, despite the entire subrule, consisting of comma and element,
+not being matched. I am sure this is a relatively straight-forward
+oversight within the grammar on my part, but I am at a loss as to how
+to correct this.  
+
+ #!/usr/bin/perl
+ 
+ use Parse::RecDescent;
+ use Test::More 'no_plan';
+ 
+ my $grammar = q
+ {
+ argument:       element ((comma element)(s))(?)
+ 
+ element:        /[\w.-_]+/
+ 
+ comma:          ','
+ };
+ 
+ my $sql = Parse::RecDescent->new( $grammar );
+ while ( chomp( my $test = <DATA> ) )
+ {
+     my ( $result, $statement ) = split /,/, $test, 2;
+     ok( defined $sql->argument( $statement ) == $result, $test );
+ }
+ 
+ __DATA__
+ 0,
+ 1,arg1
+ 0,arg1,
+ 1,arg1,arg2
+ 0,arg1,arg2,
+ 1,arg1,arg2,arg3
+ 
+
+
+=head3 Answer by Randal L. Schwartz
+
+It's matching a portion of the string, which is legal unless you also
+anchor the end of the pattern. I typically use C</\z/> at the end of my
+top-level pattern.  
+
+Also, your comma-separated string can be parsed simply with 
+
+ argument: element(s /,/)
+
+as shown in the P::RD examples on the manpage. 
 
 =head2 Backtracking (PRD doesn't do it)
 
@@ -90,7 +154,7 @@ regex engine? After all, even an NFA engine would backtrack to try all
 possible alternatives before failing :-) (Perhaps parsers just do not
 backtrack past individual subrules under any circumstances.) 
 
-And the answer is...
+=head3 And the answer is...
 
 RecDescent parsers do not work that way. They don't backtrack on
 failure; they just fail. Of course, there's nothing to prevent a
