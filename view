@@ -1,0 +1,4 @@
+#!/bin/sh -x
+
+pod2html FAQ.pm FAQ.html
+mv FAQ.html ~/Documents

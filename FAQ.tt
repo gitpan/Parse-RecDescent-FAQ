@@ -1,8 +1,8 @@
-package Parse::RecDescent::FAQ;
+package Parse::RecDescent::FAQ; 
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.18 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.21 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -56,6 +56,46 @@ Do something like this:
 =back
 
 =head1 NEWLINE PROCESSING
+
+=head2 Parsing Windows Init Files
+
+I'm trying ot use Parse::RecDescent to parse a configuration file which
+looks like this:
+
+ [SECTION]
+ parameter 1=value 1
+ parameter2=value 2
+
+ [NEXTSECTION]
+ other parameter=other value
+
+=over 4
+
+=item * Answer by Damian
+
+       q{
+                config:
+                          section(s)
+
+                section:
+                          <skip: ''>  section_label parameter(s)
+                        | <error>
+
+                section_label:
+                          /\[[A-Z]+\]\s*/
+
+                parameter:
+                          key "=" value
+
+                key:
+                          /[A-Za-z0-9 ]+/
+
+                value:
+                          /.*\n/
+        }
+
+=back
+
 
 =head2 As end of line
 
@@ -313,7 +353,7 @@ Joseph Hall's "Effective Perl Programming"
 =head2 Use repetition modifiers with a separator pattern to match
 CSV-like data
 
-The intuitive to match CSV data is this:
+The intuitive way to match CSV data is this:
 
  CSVLine:
       NonFinalToken(s?) QuotedText
@@ -555,8 +595,27 @@ while C<rule_two> returns an arrayref with 1 element upon matching:
  rule_one: statement
  rule_two: statement(1)
 
-No, I did not type this under the influence of some of my favorite
-substances. This is a fact in a FAQ and it's as simple as that. :-)
+However counter-intuitive this may at first sound, Damian provides us with 
+some insight:
+
+I don't think C<x> is the right analogy for RecDescent repetition operators.
+The behaviour of C<*> and C<+> in regexes is a closer model.
+
+I guess it depends on your poitn of view. I would have said that the
+absolute consistency with which *every* repetition (regardless of its
+number) returns an array ref is better than the alternative:
+
+        christmas:
+                gold_rings(5)                   # returns array ref
+                calling_birds(4)                # returns array ref
+                French_hens(3)                  # returns array ref
+                turtle_doves(2)                 # returns array ref
+                partridge_in_a_pear_tree(1)     # returns scalar value
+
+Especially if you have to change the count at some later point, which 
+would mess up any code relying on the type of value returned.
+
+
 
 
 =head2 Do not follow <resync> with <reject> to skip errors

@@ -20,5 +20,6 @@ FAQ.tt
 MANIFEST
 Makefile.PL
 release
+view
 test.pl
 tt.pl
