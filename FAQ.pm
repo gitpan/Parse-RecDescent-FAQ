@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.23 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.24 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -324,6 +324,29 @@ So if you would like to state the test in the positive, then do this:
 =back
 
 =head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
+
+=head2 Cloning parsers but giving each parser it own package
+
+It seems that the namespace for pre-compiled parsers
+(ie. compiled into a perl module) have hard-coded
+namespaces (IE. namespace00001).  I was trying to
+clone one of these parsers by calling its 'new'
+method, but each parser is sharing the same namespace
+and thus any global variables I have in that namespace
+within a startcode block of my grammar before the
+first rule get overwritten by the other corresponding
+parser.
+
+=over 4
+
+=item * Answer by Yves Orton
+
+ Parse::RecDescent->set_namespace("MyNameSpace");
+
+
+=back
+
+
 
 =head2 Parsing sentences to generate sentences
 
