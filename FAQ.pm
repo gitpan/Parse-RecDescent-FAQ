@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.26 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.27 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -62,8 +62,11 @@ Both types of grammer would produce the parsetree
 But an LL grammer would grow the tree in the order 1,2,3,4 (top down) but an
 LR grammer would grow 4,3,2,1 (bottom up).
 
-So P::RD it closest to being an LL parser because it can't handle 
-left-recursive grammars and because it does top-down parsing.
+So P::RD it closest to being an LL parser because
+it does top-down parsing but it isn't exactly
+constrained to being LL because
+it can handle 
+left-recursive grammars.
 
 =back
 
