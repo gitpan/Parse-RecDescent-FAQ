@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.92 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.93 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -1760,19 +1760,6 @@ complete.
 =head2 "Parsing Interesting Things", SysAdminMag.COM, December 2001, Randal Schwartz
 
 
-
-=head2 py
-
-py, which I assume is short for C<parse yacc>, is a program by
-Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
-
-It is obtainable from http://perl.plover.com/py/
-
-=head2 Parse::YAPP
-
-A bottom-up parser which will be familiar to those who
-have used Lex and Yacc. Parse::RecDescent is a top-down parser.
-
 =head2 "Data Munging with Perl" by Dave Cross
 
 Chapter 11 is focused on parsing with special emphasis on practical use of
@@ -1785,6 +1772,38 @@ This book will aid you in complexity management for large grammars.
 =head2 http://www.PerlMonks.org and irc://efnet/perlhelp
 
 A useful site to get fast help on Perl.
+
+=head2 Other Parsing Engines
+
+=head3 py
+
+py, which I assume is short for C<parse yacc>, is a program by
+Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
+
+It is obtainable from http://perl.plover.com/py/
+
+=head3 Parse::YAPP
+
+A bottom-up parser which will be familiar to those who
+have used Lex and Yacc. Parse::RecDescent is a top-down parser.
+
+
+=head3 Parse::Earley
+
+L<search.cpan.org/dist/Parse-Earley>
+
+=head3 Perl6::Rules
+
+L<search.cpan.org/dist/Perl6-Rules>
+
+=head3 perl-byacc
+
+L<http://www.instantweb.com/D/dictionary/foldoc.cgi?perl-byacc>
+
+=head3 Domain-specific parsers
+
+On CPAN there are many parsers for particular tasks such as CSV, HTML,
+XML, etc. 
 
 =head1 SOURCES for FAQ MATERIAL
 
