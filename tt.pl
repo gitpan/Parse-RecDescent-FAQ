@@ -1,4 +1,5 @@
-#!/Users/metaperl/install/bin/perl
+#!/Users/metaperl/install/perl/bin/perl
+
 
 use Text::Template;
 use strict;

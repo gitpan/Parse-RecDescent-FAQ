@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.28 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.30 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -1945,7 +1945,7 @@ is by far the likeliest explanation.
 
 
 
-=head1 SEE ALSO
+=head1 RESOURCES
 
 =over 4
 
@@ -1968,6 +1968,9 @@ http://www.perl.com/pub/a/2001/06/13/recdecent.html
 In this Linux Magazine article by Randal Schwartz uses
 Parse::RecDescent to parse Data::Dumper output. Not fast, but quite
 complete. 
+
+=item "Parsing Interesting Things", SysAdminMag.COM, December 2001, Randal Schwartz
+
 
 
 =item * py
