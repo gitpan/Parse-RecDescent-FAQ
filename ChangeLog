@@ -1,0 +1,14 @@
+2003-10-16  metaperl  <metaperl@moksha>
+
+	* FAQ.tt (Parse): added Hugh Myer's 17 tips on prd
+
+2003-10-13  metaperl  <metaperl@moksha>
+
+	* FAQ.tt (Parse): added Craig's Parse::RecDescent Area under
+	RESOURCES
+	
+
+	* MANIFEST: removed Changes from MANIFEST. Added ChangeLog (since
+	Emacs seems to have this thing for the file being named
+	ChangeLog). 
+

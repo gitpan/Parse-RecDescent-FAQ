@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.3 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.6 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -1711,53 +1711,6 @@ to this:
 
 =head1 PROGRAMMING TOPICS GERMANE TO Parse::RecDescent USE
 
-=head2 Regular Expressions
-
-=head3 Shortest match instead of longest match
-
-What is the Perl idiom for getting the leftmost shortest match?
-For instance, so:
-
- $a = "banana";
- $a =~ /b.*n/;  # but different
- print $&;
-
-yields C<banan>. How can I get it to yield
-C<ban>?
-
-=over 4
-
-=item * Just use the non-greedy quantifier modifier, C<?> :
-
-    $a =~ /b.*?n/;
-
-=back
-
-=head3 Tutorial on positive and negative lookahead and lookbehind
-regexps:
-
- http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html
-
-
-=head3  Text::Balanced  and Regexp::Common::balanced
-
-Use this instead of writing hairy regular expressions to match certain
-common "balanced" forms of text, such as tags and parenthesized text.
-
-See http://perlmonks.org/index.pl?node_id=208285
-for an example of where it would be better suited for the task than
-Parse::RecDescent.
-
-=head3 Japhy's Book on Regular Expressions
-
-Ok, so he hasn't named it yet. It's available online for free!
-
-  http://japhy.perlmonk.org/book
-
-=head3 "Mastering Regular Expressions" by Jeffrey Freidl
-
-
-You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 =head2 Double vs Single-quoted strings
 
@@ -2197,6 +2150,53 @@ is by far the likeliest explanation.
 
 =back
 
+=head2 Regular Expressions
+
+=head3 Shortest match instead of longest match
+
+What is the Perl idiom for getting the leftmost shortest match?
+For instance, so:
+
+ $a = "banana";
+ $a =~ /b.*n/;  # but different
+ print $&;
+
+yields C<banan>. How can I get it to yield
+C<ban>?
+
+=over 4
+
+=item * Just use the non-greedy quantifier modifier, C<?> :
+
+    $a =~ /b.*?n/;
+
+=back
+
+=head3 Tutorial on positive and negative lookahead and lookbehind
+regexps:
+
+ http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html
+
+
+=head3  Text::Balanced  and Regexp::Common::balanced
+
+Use this instead of writing hairy regular expressions to match certain
+common "balanced" forms of text, such as tags and parenthesized text.
+
+See http://perlmonks.org/index.pl?node_id=208285
+for an example of where it would be better suited for the task than
+Parse::RecDescent.
+
+=head3 Japhy's Book on Regular Expressions
+
+Ok, so he hasn't named it yet. It's available online for free!
+
+  http://japhy.perlmonk.org/book
+
+=head3 "Mastering Regular Expressions" by Jeffrey Freidl
+
+
+You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 
 =head1 RESOURCES
@@ -2210,6 +2210,19 @@ You can find a working example grammar for more involved
 *arithmetic* expressions in the L<Math::Symbolic::Parser> module that is 
 part of the L<Math::Symbolic> distribution. 
 It should be fairly easy to modify it to work for boolean logic. 
+
+=head2 Craig's Parse::Recdescent Area
+
+Contains an article (in English)  published during the Zweiter Perl Workshop
+as well as some slides for a presentation:
+
+     http://www.informatik.uni-trier.de/~smith/perl/recdescent/
+    
+=head2 Hugh Myer's tips on Parse::RecDescent
+
+    http://www.perlmonks.org/index.pl?node_id=180778
+
+17 tips you cannot do without.
 
 
 =head2 MySql to Oracle schema conversion utility

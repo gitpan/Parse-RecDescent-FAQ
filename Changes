@@ -1,6 +1,0 @@
-Revision history for Perl extension Parse::RecDescent::FAQ.
-
-0.01  Thu Mar  1 18:23:36 2001
-	- original version; created by h2xs 1.1.1.4 with options
-		-A -X -n Parse::RecDescent::FAQ
-
