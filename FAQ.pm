@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.37 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.1 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -43,6 +43,18 @@ Also see the "Left-recursion" section under "PARSER BEHAVIOR"
 
 =head1 DEBUGGING
 
+Paraphrased from Yves Orton:
+
+To understand more about why your parser is not behaving as it should
+take advantage of the follow variables:
+
+   $::RD_ERRORS       # unless undefined, report fatal errors
+   $::RD_WARN         # unless undefined, also report non-fatal problems
+   $::RD_HINT         # if defined, also suggestion remedies
+   $::RD_TRACE        # if defined, also trace parsers' behaviour
+
+
+
 =head1 PARSER BEHAVIOR
 
 =head2 Insuring a top-level rule match
@@ -66,36 +78,7 @@ not being matched. I am sure this is a relatively straight-forward
 oversight within the grammar on my part, but I am at a loss as to how
 to correct this.  
 
- #!/usr/bin/perl
- 
- use Parse::RecDescent;
- use Test::More 'no_plan';
- 
- my $grammar = q
- {
- argument:       element ((comma element)(s))(?)
- 
- element:        /[\w.-_]+/
- 
- comma:          ','
- };
- 
- my $sql = Parse::RecDescent->new( $grammar );
- while ( chomp( my $test = <DATA> ) )
- {
-     my ( $result, $statement ) = split /,/, $test, 2;
-     ok( defined $sql->argument( $statement ) == $result, $test );
- }
- 
- __DATA__
- 0,
- 1,arg1
- 0,arg1,
- 1,arg1,arg2
- 0,arg1,arg2,
- 1,arg1,arg2,arg3
- 
-
+Program fragment delivered error ``couldnt open file : No such file or directory at /home/metaperl/bin/tt.pl line 18, <F> line 14.''
 
 =head3 Answer by Randal L. Schwartz
 
@@ -177,6 +160,74 @@ is what you need. It takes strings and C<qr>-quoted regular expressions.
 See the Parse::RecDescent docs for details.
 
 Also, see the C<Terminal Separators> parts of the docs.
+
+Here is an example of removing C comments in program text
+(courtesy Damian Conway) by treating them as whitespace!
+
+	program: <skip: qr{\s* (/[*] .*? [*]/ \s*)*}x> statement(s)
+
+	statement: # etc...
+
+=head3 Quoting within a skip expression:
+
+Here is my script:
+
+ ------ Start Script ------
+ use strict;
+ use warnings;
+ 
+ $::RD_TRACE = 1;
+ 
+ use Parse::RecDescent;
+ 
+ my $grammar = q{
+ 
+    input:  number(s) { $return = $item{ number } } | <error>
+ 
+    number: <skip: '\.*'> /\d+/ 
+ 
+ };
+
+ my $parser = new Parse::RecDescent($grammar);
+ 
+ my $test_string = qq{1.2.3.5.8};
+
+ print join( "\n", @{ $parser -> input( $test_string ) } );
+ ------ End Script ------
+
+This script works great. However, if I change the value of the skip
+directive so that it uses double quotes instead of single quotes:
+
+ <skip: "\.*">
+
+the grammar fails to parse the input. However, if I put square
+brackets around the escaped dot:
+
+ <skip: "[\.]*">
+
+the grammar starts working again...
+
+=head4 and here's why:
+
+This small test program may help you figure out what's going wrong:
+
+	print "\.*", "\n";
+	print '\.*', "\n";
+
+Backslash works differently inside single and double quotes.
+Try:
+
+      <skip: "\\.*">
+
+The reason the third variant:
+
+      <skip: "[\.]*">
+
+works is because it becomes the pattern:
+
+	/[.]/
+
+which is a literal dot.
 
 =head2 Left-recursion
 
@@ -2128,6 +2179,11 @@ Written in Parse::RecDescent by Tim Bunce:
 
  http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw
 
+=head1 Tutorial on positive and negative lookahead and lookbehind
+regexps:
+
+ http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html
+
 =item * Data::MultiValuedHash on search.cpan.org
 
 Transparent manipulation of single or multiply-valued Perl hash values.
@@ -2213,5 +2269,29 @@ The (unwitting) contributors to this FAQ
 =item * Gwynn Judd
 
 =back 
+
+=head1 SOURCE for FAQ MATERIAL
+
+I try to regularly scan all sources of Perl question-answer for FAQ material.
+If you can think of another source that is not listed below, I would
+appreciate knowing about it.
+
+=over 4
+
+=item * comp.lang.perl.modules
+
+=item * comp.lang.perl.moderated
+
+=item * recdescent@perl.org
+
+Conveniently available via NNTP at:
+
+     news://nntp.perl.org/perl.recdescent
+
+=item * perlmonks.org
+
+  
+
+=back
 
 =cut

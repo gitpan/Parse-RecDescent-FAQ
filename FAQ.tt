@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.0 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.1 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -1695,5 +1695,29 @@ The (unwitting) contributors to this FAQ
 =item * Gwynn Judd
 
 =back 
+
+=head1 SOURCE for FAQ MATERIAL
+
+I try to regularly scan all sources of Perl question-answer for FAQ material.
+If you can think of another source that is not listed below, I would
+appreciate knowing about it.
+
+=over 4
+
+=item * comp.lang.perl.modules
+
+=item * comp.lang.perl.moderated
+
+=item * recdescent@perl.org
+
+Conveniently available via NNTP at:
+
+     news://nntp.perl.org/perl.recdescent
+
+=item * perlmonks.org
+
+  
+
+=back
 
 =cut
