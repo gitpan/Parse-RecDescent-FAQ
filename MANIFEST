@@ -4,6 +4,7 @@ code/escape-perl-symbols.answer
 code/escape-perl-symbols.question
 code/fake-deep.answer
 code/fake-deep.tt
+code/grammar-classes.tt
 code/incremental-data-structure.answer
 code/incremental-data-structure.question
 code/inter-token.question

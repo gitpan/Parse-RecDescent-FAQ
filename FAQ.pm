@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.27 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.28 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -20,53 +20,22 @@ Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent.
 
 =item Answer by Yves Orton:
 
+I have a data structure which is
 
-LR = Left-to-right Rightmost Derivation
+a hash of entries
+where
+an entry is a list/array of sets
 
-(0/N) Refers to the number of tokens of lookahead required.
-Used in bottom up parsers (like YACC).
-Any context free grammer can be handled by a LR parser.
+I have also a grammar that can parse the syntax of the text files that
+contain the data I want to fill this structure with. Until here
+everything is ok.
 
-LL = Left-to-right Leftmost Derivation
+Problem: I cannot figure out how to actually FILL the parsed data into
+the structure. I can only decide if a string is grammatically correct
+or not.
 
-(0/N) Refers to the number of tokens of lookahead required.
-Used in top down parsers.
-Only a limited subset of context free grammers can be parsed with an LL
-parser.
 
-IIRC an LR grammer may be converted into an LL grammer algorithmically, but
-that the resulting grammer is difficult to deal with from a human point of
-view.
 
-Consider the grammer (borrowed from
-http://www.cs.unc.edu/~fhernand/144/lectures/lect5.pdf)
-id_list      : id id_list_tail
-id_list_tail : , id id_list_tail
-             | ;
-
-And the text:A,B,C;
-
-Both types of grammer would produce the parsetree
-
-             id_list(1)
-               /\  
-              A  \
-                 id_list_tail(2)
-                  /   |   \
-                 ,    B    id_list_tail(3)
-                            /   |  \
-                           ,    C   id_list_tail(4)
-                                         |
-                                         ;
-
-But an LL grammer would grow the tree in the order 1,2,3,4 (top down) but an
-LR grammer would grow 4,3,2,1 (bottom up).
-
-So P::RD it closest to being an LL parser because
-it does top-down parsing but it isn't exactly
-constrained to being LL because
-it can handle 
-left-recursive grammars.
 
 =back
 
