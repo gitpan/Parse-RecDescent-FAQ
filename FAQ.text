@@ -1188,6 +1188,10 @@ Programming Topics Germane to Parse::RecDescent Use
         is by far the likeliest explanation.
 
 SEE ALSO
+    * Data::MultiValuedHash on search.cpan.org
+        Transparent manipulation of single or multiply-valued Perl hash
+        values.
+
     * Parse::Recdescent tutorial at www.perl.com
         http://www.perl.com/pub/a/2001/06/13/recdecent.html
 

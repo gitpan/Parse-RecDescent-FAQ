@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.11 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.12 $ =~ /Revision:\s+(.*)\s+/ ;
 
 
 1;
@@ -1438,6 +1438,10 @@ is by far the likeliest explanation.
 =head1 SEE ALSO
 
 =over 4
+
+=item * Data::MultiValuedHash on search.cpan.org
+
+Transparent manipulation of single or multiply-valued Perl hash values.
 
 =item * Parse::Recdescent tutorial at www.perl.com
 
