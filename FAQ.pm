@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.14 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.18 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -338,6 +338,96 @@ with a grammar that's way more elegant and efficient...)
 
 =back
 
+=head2 XOR as opposed IOR alternation matching
+
+I'm using alternations in some productions but in contrast to
+the definition of the |-operator, I'm looking for a behaviour
+which is XOR (^) not OR (|). So far I used the <reject>
+directive to simulate such a behaviour.
+
+Is there any easy solution to this?
+
+=over 4
+
+=item * Answer by Randal Schwartz
+
+Use a set.
+
+ use Parse::RecDescent;
+ use Data::Dumper; $|++;
+ my $parser = Parse::RecDescent->new(q{
+ 
+ line: word(s) /\z/ {
+ my @words = @{$item[1]};
+ my %count;
+ (grep ++$count{$_} > 1, @words) ? undef : \@words;
+ }
+ 
+ word: "one" | "two" | "three"
+ 
+ }) or die;
+ 
+ for ("one two", "one one", "two three one", "three one two one") {
+   print "$_ =>\n";
+   print Dumper($parser->line($_));
+ }
+ 
+ # which generates:
+ 
+ one two =>
+   $VAR1 = [
+ 	   'one',
+ 	   'two'
+ 	  ];
+ one one =>
+   $VAR1 = undef;
+ two three one =>
+   $VAR1 = [
+ 	   'two',
+ 	   'three',
+ 	   'one'
+ 	  ];
+ three one two one =>
+   $VAR1 = undef;
+
+
+
+=item * Embellishment by Damian Conway
+
+
+
+Furthermore, if uniqueness was something you needed to enforce more
+widely
+in your grammar, you could factor it out into a parametric rule:
+
+        use Parse::RecDescent;
+        use Data::Dumper; $|++;
+        my $parser = Parse::RecDescent->new(q{
+
+        line: unique['word'] /\z/ { $return = $item[1] }
+
+        unique: <matchrule: $arg[0]>(s)
+            {
+              my %seen;
+              foreach (@{$item[1]}) { undef $item[1] and last if
+$seen{$_}++ }
+              $return = $item[1];
+            }
+
+        word: "one" | "two" | "three"
+
+        }) or die;
+
+        for ("one two", "one one", "two three one", "three one two
+one") {
+          print "$_ =>\n";
+          print Dumper($parser->line($_));
+        }
+
+
+
+=back
+
 
 =head1 CLEANING UP YOUR GRAMMARS
 
@@ -570,6 +660,30 @@ $return variable in the actions.
 
 =head1 THINGS NOT TO DO
 
+=head2 Don't think that rule: statement and rule: statement(1) are the
+same
+
+Even though in pure Perl, the repetition modifier returns the same
+data structure without or without an argument of one:
+
+ use Data::Dumper;
+
+ my @a = (x);
+ my @b = (x) x 1;
+
+ my $x = 'x';
+ my $y = 'x' x 1;
+
+In this first case below, C<rule_one> returns a scalar upon matching, 
+while C<rule_two> returns an arrayref with 1 element upon matching:
+
+ rule_one: statement
+ rule_two: statement(1)
+
+No, I did not type this under the influence of some of my favorite
+substances. This is a fact in a FAQ and it's as simple as that. :-)
+
+
 =head2 Do not follow <resync> with <reject> to skip errors
 
 C<resync> is used to allow a rule which would normally fail to "pass" so that 
@@ -633,6 +747,86 @@ shell. But howdo I catch them from within ??
                 or die "Can't redirect errors to file 'errfile'";
 
         # your program here
+
+=back
+
+=head2 Accessing error data
+
+What I want to do is export a <error: foo bar> condition to the
+calling
+program.  Currently _error writes the error message to (what
+essentially
+is STDOUT) which means a parsing error prints a nice message, but it
+is
+up to the reader to DO anything about it.
+
+I have a Tk viewer that will parse the file.  When the parse fails, I
+would like to capture the line number and error message returned and
+position the viewer (a text widget) to that line, highlighted.  And no
+STDOUT message.
+
+Something kind of like the eval function where the return value is the
+result but $@ is set as a "side effect".
+
+Am I missing something about the built in capability?  Is the solution
+as simple as overloading the Parse::RecDescent::_error subroutine with
+my own copy which might look like this:
+
+%Parse::RecDescent::ERROR=();
+...
+sub Parse::RecDescent::_error($;$)
+{
+	$ERRORS++;
+	return 0 if ! _verbosity("ERRORS");
+	%Parse::RecDescent::ERROR=('line'=>$_[1],'msg'=>$_[0]);
+	return 1;
+}
+
+It seems like it should work and I tried it and it did.  BUT this is
+an
+extremely complex bit of code and I'm concerned about unforseen
+consequences.
+
+Of course, I could make ERROR a my variable and provide a method to
+access it so it is not a "global", and this would be OO code of a
+higher
+purity (or something), but that is not really the point.
+
+=over 4
+
+=item * Answer by Damian Conway
+
+You can get access to the error data by referring to the attribute
+C<$thisparser->{errors}> within a rule. 
+
+C<$thisparser->{errors}> is a reference to an array of arrays. Each of
+the inner arrays has two elements: the error message, and the line
+number. 
+
+So, for example, if your top-level rule is:
+
+ start: subrule1 subrule2
+
+then you could intercept any errors and print them to a log file, like
+so: 
+
+ start: subrule1 subrule2
+      | { foreach (@{$thisparser->{errors}}) {
+              print LOGFILE "Line $_->[1]:$_->[0]\n";
+          }
+          $thisparser->{errors} = undef;
+        }
+
+Note that the line:
+
+ $thisparser->{errors} = undef;
+
+is doing double duty. By resetting C<$thisparser->{errors}>, it's
+preventing those annoying error messages from being automagically
+printed. And by having the value C<undef> as the last value of the
+action, it's causing the action to fail, which means the second
+production fails, which means the top rule fails, which means errors
+still cause the parse to fail and return C<undef>.
 
 =back
 
@@ -1010,6 +1204,27 @@ to this:
           {
           local $/;
           }
+
+=back
+
+=head1 REGULAR EXPRESSIONS
+
+=head2 Shortest match instead of longest match
+
+What is the Perl idiom for getting the leftmost shortest match?
+For instance, so:
+
+ $a = "banana";
+ $a =~ /b.*n/;  # but different
+ print $&;
+
+would yield "ban" instead of "banan"?
+
+=over 4
+
+=item *
+
+    $a =~ /b.*?n/;
 
 =back
 
@@ -1468,6 +1683,13 @@ Transparent manipulation of single or multiply-valued Perl hash values.
 =item * Parse::Recdescent tutorial at www.perl.com
 
 http://www.perl.com/pub/a/2001/06/13/recdecent.html
+
+=item * "Safe undumping"
+
+In this Linux Magazine article by Randal Schwartz uses
+Parse::RecDescent to parse Data::Dumper output. Not fast, but quite
+complete. 
+
 
 =item * py
 

@@ -14,9 +14,8 @@ code/parenthesis-match.answer-merlyn
 code/rule-call-parser.answer
 code/scored-grammar.answer
 code/shallow-deep-copy-tutorial.answer
+code/xor-alternation-matching.perl
 FAQ.pm
-FAQ.html
-FAQ.text
 FAQ.tt
 MANIFEST
 Makefile.PL

@@ -4,8 +4,6 @@ perl Makefile.PL PREFIX=$PREFIX
 cp ~/bin/tt.pl .
 ~/bin/tt.pl FAQ.tt
 mv FAQ.tt-out FAQ.pm
-pod2html FAQ.pm FAQ.html
-pod2text FAQ.pm > FAQ.text
 rm *.tar.gz
 make tardist
 
