@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.30 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.31 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -832,7 +832,7 @@ action.
 
 =head1 ERROR HANDLING
 
-=head 2 Propagating a failure up after a <commit> on a subrule
+=head2 Propagating a failure up after a <commit> on a subrule
 
 See L<Commit in subrule which is optional in rule|Commit in subrule which is optional in rule>
 
