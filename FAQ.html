@@ -7,82 +7,195 @@
 <LI><A HREF="#NAME">NAME
 
 </A></LI>
-<LI><A HREF="#Parse%3a%3aRecDescent%20Questions">Parse::RecDescent Questions
+<LI><A HREF="#IGNORABLE%20TOKENS%20(e.g.%20C%20comments)">IGNORABLE TOKENS (e.g. C comments)
+
+</A></LI>
+<LI><A HREF="#COLUMN-ORIENTED%20PROCESSING">COLUMN-ORIENTED PROCESSING
 
 </A></LI>
 <UL>
-<LI><A HREF="#Matching%20line%20continuation%20characters">Matching line continuation characters
-
-</A></LI>
-<LI><A HREF="#Incremental%20generation%20of%20data%20structure%20representing%20parse">Incremental generation of data structure representing parse
-
-</A></LI>
-<LI><A HREF="#How%20can%20I%20match%20parenthetical%20expressions%20to%20arbitrary%20depth%3f">How can I match parenthetical expressions to arbitrary depth?
-
-</A></LI>
-<LI><A HREF="#Switching%20out%20of%20first-match-wins%20mode">Switching out of first-match-wins mode
-
-</A></LI>
-<LI><A HREF="#I'm%20having%20problems%20with%20the%20inter-token%20separator%3a">I'm having problems with the inter-token separator:
-
-</A></LI>
-<LI><A HREF="#Getting%20text%20from%20subrule%20matches">Getting text from subrule matches
-
-</A></LI>
-<LI><A HREF="#Matching%20blank%20lines">Matching blank lines
-
-</A></LI>
-<LI><A HREF="#Error%20handling">Error handling
-
-</A></LI>
-<LI><A HREF="#My%20grammar%20is%20not%20returning%20any%20data!">My grammar is not returning any data! 
-
-</A></LI>
-<LI><A HREF="#How%20can%20I%20get%20at%20the%20text%20remaining%20to%20be%20parsed%3f">How can I get at the text remaining to be parsed?
-
-</A></LI>
-<LI><A HREF="#You%20don't%20escape%20Perl%20symbols%20in%20your%20grammars.%20Why%20did%20I%20have%20to%3f">You don't escape Perl symbols in your grammars. Why did I have to?
-
-</A></LI>
-<LI><A HREF="#Other%20modules%20appear%20to%20not%20work%20when%20used%20with%20P%3a%3aRD">Other modules appear to not work when used with P::RD
+<LI><A HREF="#Whitespace%2c%20text%2c%20column%20N%2c%20period%2c%20number%20(some%20reference%20to%20lookahead)">Whitespace, text, column N, period, number (some reference to lookahead)
 
 </A></LI>
 </UL>
-<LI><A HREF="#Programming%20Topics%20Germane%20to%20Parse%3a%3aRecDescent%20Use">Programming Topics Germane to Parse::RecDescent Use
-
-</A></LI>
-<UL>
-<LI><A HREF="#Tracking%20text%20parsed%20between%20phases%20of%20the%20parse">Tracking text parsed between phases of the parse
-
-
-</A></LI>
-<LI><A HREF="#Unconditionally%20listifying%20scalars">Unconditionally listifying scalars
-
-</A></LI>
-<LI><A HREF="#A%20tutorial%20on%20Shallow%20versus%20Deep%20Copying">A tutorial on Shallow versus Deep Copying 
-
-</A></LI>
-<LI><A HREF="#Apparent%2c%20but%20not%20really%20deep%20copying%3a%20%20my%20(%40list)%20%3d%20%40%7b%5b%40%7b%24_%5b0%5d%7d%5d%7d%3b">Apparent, but not really deep copying:  my (@list) = @{[@{$_[0]}]};
-
-</A></LI>
-</UL>
-<LI><A HREF="#SEE%20ALSO">SEE ALSO
-
-</A></LI>
-<LI><A HREF="#AUTHOR">AUTHOR
-
-</A></LI>
 </UL>
 <HR>
 <H1><A NAME="NAME">NAME
 
 </A></H1>
 
-<P>Parse::RecDescent::FAQ - Unofficial, unauthorized FAQ for Parse::RecDescent
+<P>Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
 
-</P><H1><A NAME="Parse%3a%3aRecDescent%20Questions">Parse::RecDescent Questions
+</P><H1><A NAME="IGNORABLE%20TOKENS%20(e.g.%20C%20comments)">IGNORABLE TOKENS (e.g. C comments)
 
 </A></H1>
+
+<P>Since there is no separate lexer in recdescent. And it is top down. Is
+there anyway to deal w/ removing C comments that could be anywhere.
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Conway">* Answer by Conway
+
+</A></DT>
+<DD>
+
+<P>Sure. Treat them as whitespace!
+
+</P>
+<P>Do something like this:
+
+</P>
+<PRE>	program: &lt;skip: qr{\s* (/[*] .*? [*]/ \s*)*}x&gt; statement(s)</PRE>
+
+<PRE>	statement: # etc...</PRE>
+</DD>
+</DL>
+<H1><A NAME="COLUMN-ORIENTED%20PROCESSING">COLUMN-ORIENTED PROCESSING
+
+</A></H1>
+<H2><A NAME="Whitespace%2c%20text%2c%20column%20N%2c%20period%2c%20number%20(some%20reference%20to%20lookahead)">Whitespace, text, column N, period, number (some reference to lookahead)
+
+</A></H2>
+
+<P>Ok, now the line I'm trying to deal with is:
+
+</P>
+<P>&quot;some amount of
+whitespace,
+then some text, then starting at column 48 a number, followed by a
+period,
+followed by another number&quot;.  I want to capture the text (the
+&quot;title&quot;),
+and the two numbers (major and minor versions)
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Damian%20Conway">* Answer by Damian Conway
+
+</A></DT>
+<DD>
+
+<P>You really do want to use a regex here (to get the
+lookahead/backtracking that RecDescent doesn't do).
+
+</P>
+<PRE>   line: m/^(\s*        		# leading whitespace
+   	      (.*?)        		# the title
+              (?:\s+(?=\d+\.\d+\s*$)) 	# the space preceeding the numbers
+	    )
+            (\d+)        		# the major version number
+            \.
+            (\d+)        		# the minor version number
+	 /x
+	 &lt;reject: length $1 != 47&gt;
+	 { @{$return}{title major minor)} = ($2,$3,$4) }</PRE>
+</DD>
+</DL>
+<H2><A NAME="Another%20example">Another example
+
+</A></H2>
+
+<P>I'm parsing some lines where the &quot;column formatting&quot; is fixed, i.e. a
+particular line might be formally described as &quot;a single word followed by
+some amount of whitespace followed by another word whose first character
+begins at column 22&quot;. 
+
+</P><DL><DT><A NAME="*%20A%20simple%20answer%20that%20is%20wrong%3a">* A simple answer that is wrong:
+
+
+</A></DT>
+<DD>
+
+<P>Hmm, I guess I could make this simpler and do this:
+
+</P>
+<P>line: word &lt;reject: $thiscolumn != 22&gt; word
+word: /\S+/
+
+</P>
+<P>right?
+
+</P>
+<P>Wrong. And the reason why is that The 
+
+</P>
+<PRE>  &lt;reject:...&gt; </PRE>
+
+<P>won't skip any whitespace after the first word.
+
+</P>
+<P>You instead would want:
+
+</P>
+<PRE>	line: word '' &lt;reject: $thiscolumn != 22&gt; word</PRE>
+</DD>
+<DT><A NAME="*%20Restating%20it%20in%20the%20positive%20can%20be%20a%20GOTCHA%3a">* Restating it in the positive can be a GOTCHA:
+
+</A></DT>
+<DD>
+
+<P>I'd state that in the positive instead:
+
+</P>
+<PRE>    line: word '' { $thiscolumn == 22 } word </PRE>
+
+<P>This seems nice and more to the point, but unfortunately a failing conditional 
+yields a false value but not necessarily an undef value. So in this case, you
+might get back a <CODE>0</CODE> from evaluating this conditional, but unfortunately,
+that does not lead to failure.
+
+</P>
+<P>On the other hand, &lt;reject&gt; is exactly the same as the action
+ { undef } 
+and is guaranteed to make a production fail immediately.
+
+</P>
+<P>So if you would like to state the test in the positive, then do this:
+
+</P>
+<PRE>   line: word '' { $thiscolumn == 22 || undef } word </PRE>
+<H1><A NAME="Parse%3a%3aRecDescent%20Questions">Parse::RecDescent Questions
+
+</A></H1>
+<H2><A NAME="Precompiling%20Grammars%20for%20Speed%20of%20Execution">Precompiling Grammars for Speed of Execution
+
+</A></H2>
+
+<P>Take a look at Parse::RecDescent's precompilation option
+
+</P><H2><A NAME="Capturing%20whitespace%20between%20tokens">Capturing whitespace between tokens
+
+</A></H2>
+
+<P>I need to capture the whitespace between tokens using Parse::RecDescent.
+I've tried modifying the $skip expression to // or /\b/ (so I can tokenize
+whitespace), but that doesn't seem to have the desired effect.
+
+</P>
+<P>Just having a variable where all skipped whitespace is stored would be
+sufficient.
+
+</P>
+<P>Does anybody know how to trick Parse::RecDescent into doing this?
+
+</P><DL><DT><A NAME="*%20Answer%20by%20Damian%20Conway">* Answer by Damian Conway
+
+</A></DT>
+<DD>
+
+<P>To turn off whitespace skipping so I can handle it manually, I always use:
+
+</P>
+<PRE>	&lt;skip:''&gt;</PRE>
+
+<P>See:
+
+</P>
+<PRE>	demo_decomment.pl
+	demo_embedding.pl
+	demo_textgen.pl</PRE>
+
+<P>for examples.
+
+</P></DD>
+</DL>
 <H2><A NAME="Matching%20line%20continuation%20characters">Matching line continuation characters
 
 </A></H2>
@@ -635,9 +748,134 @@ change things like this:
 <PRE>          {
           local $/;
           }</PRE>
-<H1><A NAME="Programming%20Topics%20Germane%20to%20Parse%3a%3aRecDescent%20Use">Programming Topics Germane to Parse::RecDescent Use
+<H1><A NAME="THINGS%20NOT%20TO%20DO">THINGS NOT TO DO
 
 </A></H1>
+<H2><A NAME="Do%20not%20follow%20%3cresync%3e%20with%20%3creject%3e%20to%20skip%20errors">Do not follow &lt;resync&gt; with &lt;reject&gt; to skip errors
+
+</A></H2>
+
+<P><CODE>resync</CODE> is used to allow a rule which would normally fail to &quot;pass&quot; so that 
+parsing can continue. If you add the reject, then it unconditionally fails.
+
+</P><H2><A NAME="Do%20not%20assume%20that%20%25item%20contains%20an%20array%20ref%20of%20all%20text%20matched%20for%0aa%20particular%20subrule">Do not assume that %item contains an array ref of all text matched for
+a particular subrule
+
+</A></H2>
+
+<P>For example: 
+
+</P>
+<PRE>        range: '(' number '..' number )'
+                        { $return = $item{number} }</PRE>
+
+<P>will return only the value corresponding to the last match of the <CODE>number</CODE>
+subrule.
+
+</P>
+<P>To get each value for the number subrule, you have a couple of choices,
+both documented in the Parse::RecDescent manpage under
+<CODE>@item and %item</CODE>.
+
+
+</P><H1><A NAME="Programming%20Topics%20Germane%20to%20Parse%3a%3aRecDescent%20Use">Programming Topics Germane to Parse::RecDescent Use
+
+</A></H1>
+<H2><A NAME="Double%20vs%20Single-quoted%20strings">Double vs Single-quoted strings
+
+
+</A></H2>
+
+<P>I'm playing around with the &lt;skip:&gt; directive and I've noticed
+something interesting that I can't explain to myself. 
+
+</P>
+<P>Here is my script:
+
+</P>
+<P>------ Start Script ------
+use strict;
+use warnings;
+
+</P>
+<P>$::RD_TRACE = 1;
+
+</P>
+<P>use Parse::RecDescent;
+
+</P>
+<P>my $grammar = q{
+
+</P>
+<PRE>   input:  number(s) { $return = $item{ number } } | &lt;error&gt;</PRE>
+
+<PRE>   number: &lt;skip: '\.*'&gt; /\d+/ </PRE>
+
+<P>};
+
+</P>
+<P>my $parser = new Parse::RecDescent($grammar);
+
+</P>
+<P>my $test_string = qq{1.2.3.5.8};
+
+</P>
+<P>print join( &quot;\n&quot;, @{ $parser -&gt; input( $test_string ) } );
+------ End Script ------
+
+</P>
+<P>This script works great. However, if I change the value of the skip
+directive so that it uses double quotes instead of single quotes:
+
+</P>
+<P>&lt;skip: &quot;\.*&quot;&gt;
+
+</P>
+<P>the grammar fails to parse the input. However, if I put square
+brackets around the escaped dot:
+
+</P>
+<P>&lt;skip: &quot;[\.]*&quot;&gt;
+
+</P>
+<P>the grammar starts working again:
+
+</P>
+<P>How does this work this way?
+
+</P><DL><DT><A NAME="*%20Damian%20says%3a">* Damian says:
+
+
+
+</A></DT>
+<DD>
+
+<P>This small test program may help you figure out what's going wrong:
+
+</P>
+<PRE>	print &quot;\.*&quot;, &quot;\n&quot;;
+	print '\.*', &quot;\n&quot;;</PRE>
+
+<P>Backslash works differently inside single and double quotes.
+Try:
+
+</P>
+<PRE>      &lt;skip: &quot;\\.*&quot;&gt;</PRE>
+
+<P>The reason the third variant:
+
+</P>
+<PRE>      &lt;skip: &quot;[\.]*&quot;&gt;</PRE>
+
+<P>works is because it becomes the pattern:
+
+</P>
+<PRE>	/[.]/</PRE>
+
+<P>which is a literal dot.
+
+</P></DD>
+</DL>
 <H2><A NAME="Tracking%20text%20parsed%20between%20phases%20of%20the%20parse">Tracking text parsed between phases of the parse
 
 
@@ -936,7 +1174,7 @@ purpose of this. Working from inner to outer:
                              # we have an array, but how is it 
                              # different from the first array we
                              # dereferenced?</PRE>
-
+<DL>
 <P>The line from demo_calc.pl is in
 fact not doing any deep copying.
 
@@ -996,7 +1234,41 @@ output... it just makes for a tiny bit of wasted work (or maybe Perl is
 smart enough to optimze away the wasted work, I dunno).
 
 
-</P><H1><A NAME="SEE%20ALSO">SEE ALSO
+</P><DT><A NAME="*%20Damian%20Conway%20says%3a">* Damian Conway says:
+
+</A></DT>
+<DD>
+
+<P>I have no recollection of why I did this (see children, that's
+why you should *always* comment your code!).
+
+</P>
+<P>I *suspect* it's vestigal -- from a time when contents of the
+argument array reference were somehow modified in situ, but
+it was important that the original argument's contents not
+be changed.
+
+</P>
+<P>The ungainly <CODE>@{[@{$_[0]}]}</CODE> syntax is a way of (shallow)
+copying the array referenced in $_[0] without declaring a new
+variable. So another possible explanation is that evalop may
+originally have been a one-liner, in which case I might have
+used this &quot;inlined copy&quot; to keep the subroutine's body to a
+single expression.
+
+</P>
+<P>However...
+
+</P>
+<PRE>   Even Damian can make a mistake</PRE>
+
+<P>is by far the likeliest explanation.
+
+
+
+</P></DD>
+</DL>
+<H1><A NAME="SEE%20ALSO">SEE ALSO
 
 </A></H1>
 <DL><DT><A NAME="*%20Parse%3a%3aYAPP">* Parse::YAPP
@@ -1085,6 +1357,8 @@ for P::RD, but he did not reply. Sigh.
 
 </A></DT>
 <DD>
+</DD>
+</DL>
 </DD>
 </DL>
 

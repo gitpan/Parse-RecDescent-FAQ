@@ -4,4 +4,5 @@ FAQ.html
 FAQ.text
 MANIFEST
 Makefile.PL
+release
 test.pl

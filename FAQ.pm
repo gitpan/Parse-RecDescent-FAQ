@@ -2,16 +2,155 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-$VERSION = '1.4';
+our $VERSION = sprintf '%2d.%02d', q$Revision: 2.0 $ =~ /(\d+)\.(\d+)/;
+
 
 1;
 __END__
 
 =head1 NAME
 
-Parse::RecDescent::FAQ - Unofficial, unauthorized FAQ for Parse::RecDescent
+Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
+
+=head1 IGNORABLE TOKENS (e.g. C comments)
+
+Since there is no separate lexer in recdescent. And it is top down. Is
+there anyway to deal w/ removing C comments that could be anywhere.
+
+=over 4
+
+=item * Answer by Conway
+
+Sure. Treat them as whitespace!
+
+Do something like this:
+
+	program: <skip: qr{\s* (/[*] .*? [*]/ \s*)*}x> statement(s)
+
+	statement: # etc...
+
+=back
+
+=head1 COLUMN-ORIENTED PROCESSING
+
+=head2 Whitespace, text, column N, period, number (some reference to lookahead)
+
+Ok, now the line I'm trying to deal with is:
+
+"some amount of
+whitespace,
+then some text, then starting at column 48 a number, followed by a
+period,
+followed by another number".  I want to capture the text (the
+"title"),
+and the two numbers (major and minor versions)
+
+=over 4
+
+=item * Answer by Damian Conway
+
+You really do want to use a regex here (to get the
+lookahead/backtracking that RecDescent doesn't do).
+
+   line: m/^(\s*        		# leading whitespace
+   	      (.*?)        		# the title
+              (?:\s+(?=\d+\.\d+\s*$)) 	# the space preceeding the numbers
+	    )
+            (\d+)        		# the major version number
+            \.
+            (\d+)        		# the minor version number
+	 /x
+	 <reject: length $1 != 47>
+	 { @{$return}{title major minor)} = ($2,$3,$4) }
+
+=back
+
+=over 4
+
+=head2 Another example
+
+I'm parsing some lines where the "column formatting" is fixed, i.e. a
+particular line might be formally described as "a single word followed by
+some amount of whitespace followed by another word whose first character
+begins at column 22". 
+
+=over 4
+
+=item * A simple answer that is wrong:
+
+
+Hmm, I guess I could make this simpler and do this:
+
+line: word <reject: $thiscolumn != 22> word
+word: /\S+/
+
+right?
+
+Wrong. And the reason why is that The 
+
+  <reject:...> 
+
+won't skip any whitespace after the first word.
+
+You instead would want:
+
+	line: word '' <reject: $thiscolumn != 22> word
+
+=item * Restating it in the positive can be a GOTCHA:
+
+I'd state that in the positive instead:
+
+    line: word '' { $thiscolumn == 22 } word 
+
+This seems nice and more to the point, but unfortunately a failing conditional 
+yields a false value but not necessarily an undef value. So in this case, you
+might get back a C<0> from evaluating this conditional, but unfortunately,
+that does not lead to failure.
+
+On the other hand, <reject> is exactly the same as the action
+ { undef } 
+and is guaranteed to make a production fail immediately.
+
+So if you would like to state the test in the positive, then do this:
+
+   line: word '' { $thiscolumn == 22 || undef } word 
+
+=cut
 
 =head1 Parse::RecDescent Questions
+
+=head2 Precompiling Grammars for Speed of Execution
+
+Take a look at Parse::RecDescent's precompilation option
+
+=head2 Capturing whitespace between tokens
+
+I need to capture the whitespace between tokens using Parse::RecDescent.
+I've tried modifying the $skip expression to // or /\b/ (so I can tokenize
+whitespace), but that doesn't seem to have the desired effect.
+
+Just having a variable where all skipped whitespace is stored would be
+sufficient.
+
+Does anybody know how to trick Parse::RecDescent into doing this?
+
+=over 4
+
+=item * Answer by Damian Conway
+
+To turn off whitespace skipping so I can handle it manually, I always use:
+
+	<skip:''>
+
+See:
+
+	demo_decomment.pl
+	demo_embedding.pl
+	demo_textgen.pl
+
+for examples.
+
+=back
 
 =head2 Matching line continuation characters
 
@@ -518,7 +657,103 @@ to this:
 
 =back
 
+=head1 THINGS NOT TO DO
+
+=head2 Do not follow <resync> with <reject> to skip errors
+
+C<resync> is used to allow a rule which would normally fail to "pass" so that 
+parsing can continue. If you add the reject, then it unconditionally fails.
+
+=head2 Do not assume that %item contains an array ref of all text matched for
+a particular subrule
+
+For example: 
+
+        range: '(' number '..' number )'
+                        { $return = $item{number} }
+
+will return only the value corresponding to the last match of the C<number>
+subrule.
+
+To get each value for the number subrule, you have a couple of choices,
+both documented in the Parse::RecDescent manpage under
+C<@item and %item>.
+
+
 =head1 Programming Topics Germane to Parse::RecDescent Use
+
+=head2 Double vs Single-quoted strings
+
+
+I'm playing around with the <skip:> directive and I've noticed
+something interesting that I can't explain to myself. 
+
+Here is my script:
+
+------ Start Script ------
+use strict;
+use warnings;
+
+$::RD_TRACE = 1;
+
+use Parse::RecDescent;
+
+my $grammar = q{
+
+   input:  number(s) { $return = $item{ number } } | <error>
+
+   number: <skip: '\.*'> /\d+/ 
+
+};
+
+my $parser = new Parse::RecDescent($grammar);
+
+my $test_string = qq{1.2.3.5.8};
+
+print join( "\n", @{ $parser -> input( $test_string ) } );
+------ End Script ------
+
+This script works great. However, if I change the value of the skip
+directive so that it uses double quotes instead of single quotes:
+
+<skip: "\.*">
+
+the grammar fails to parse the input. However, if I put square
+brackets around the escaped dot:
+
+<skip: "[\.]*">
+
+the grammar starts working again:
+
+How does this work this way?
+
+=over 4
+
+=item * Damian says:
+
+
+
+This small test program may help you figure out what's going wrong:
+
+	print "\.*", "\n";
+	print '\.*', "\n";
+
+Backslash works differently inside single and double quotes.
+Try:
+
+      <skip: "\\.*">
+
+The reason the third variant:
+
+      <skip: "[\.]*">
+
+works is because it becomes the pattern:
+
+	/[.]/
+
+which is a literal dot.
+
+=back
 
 =head2 Tracking text parsed between phases of the parse
 
@@ -856,6 +1091,31 @@ around there is one of two things:
 Even Damian can make a mistake, but it's not a mistake that affects
 output... it just makes for a tiny bit of wasted work (or maybe Perl is
 smart enough to optimze away the wasted work, I dunno).
+
+
+=item * Damian Conway says:
+
+I have no recollection of why I did this (see children, that's
+why you should *always* comment your code!).
+
+I *suspect* it's vestigal -- from a time when contents of the
+argument array reference were somehow modified in situ, but
+it was important that the original argument's contents not
+be changed.
+
+The ungainly C<@{[@{$_[0]}]}> syntax is a way of (shallow)
+copying the array referenced in $_[0] without declaring a new
+variable. So another possible explanation is that evalop may
+originally have been a one-liner, in which case I might have
+used this "inlined copy" to keep the subroutine's body to a
+single expression.
+
+However...
+
+   Even Damian can make a mistake
+
+is by far the likeliest explanation.
+
 
 
 =back
