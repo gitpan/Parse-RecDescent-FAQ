@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.25 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.26 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -12,9 +12,94 @@ __END__
 
 Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent. 
 
+=head1 OVERVIEW-TYPE QUESTIONS
+
+=head2 Is Parse::RecDescent LL(1)? LL(N)? LR(1)? LR(N)?
+
+=over 4
+
+=item Answer by Yves Orton:
+
+
+LR = Left-to-right Rightmost Derivation
+
+(0/N) Refers to the number of tokens of lookahead required.
+Used in bottom up parsers (like YACC).
+Any context free grammer can be handled by a LR parser.
+
+LL = Left-to-right Leftmost Derivation
+
+(0/N) Refers to the number of tokens of lookahead required.
+Used in top down parsers.
+Only a limited subset of context free grammers can be parsed with an LL
+parser.
+
+IIRC an LR grammer may be converted into an LL grammer algorithmically, but
+that the resulting grammer is difficult to deal with from a human point of
+view.
+
+Consider the grammer (borrowed from
+http://www.cs.unc.edu/~fhernand/144/lectures/lect5.pdf)
+id_list      : id id_list_tail
+id_list_tail : , id id_list_tail
+             | ;
+
+And the text:A,B,C;
+
+Both types of grammer would produce the parsetree
+
+             id_list(1)
+               /\  
+              A  \
+                 id_list_tail(2)
+                  /   |   \
+                 ,    B    id_list_tail(3)
+                            /   |  \
+                           ,    C   id_list_tail(4)
+                                         |
+                                         ;
+
+But an LL grammer would grow the tree in the order 1,2,3,4 (top down) but an
+LR grammer would grow 4,3,2,1 (bottom up).
+
+So P::RD it closest to being an LL parser because it can't handle 
+left-recursive grammars and because it does top-down parsing.
+
+=back
+
+Also see the "Left-recursion" section under "PARSER BEHAVIOR"
+
 =head1 DEBUGGING
 
 =head1 PARSER BEHAVIOR
+
+=head2 Left-recursion
+
+=over 4
+
+=item * On elimination of left-recursion Randal Schwartz states:
+
+I had a fun time eliminating a mutual left-recursion problem for
+my "Data-Undumper" program, which used P::RD as an essential component.
+See my discussion of such at
+
+ http://www.stonehenge.com/merlyn/LinuxMag/col29.html
+
+=item * Also, regarding elimination see this Perlmonks node:
+
+ http://www.perlmonks.org/index.pl?lastnode_id=6364&node_id=153155
+
+=item * Regarding detection of left-recursion, Conway states:
+
+RecDescent does a complete graph traversal looking for n-ary
+left-recursion loops and fails to compile the grammar if it finds any
+left-recursive loop involving any number of rules. It has done this since its
+earliest versions.
+
+=back
+
+
+
 
 =head2 Commit in subrule which is optional in rule
 

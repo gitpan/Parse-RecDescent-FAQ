@@ -3,7 +3,7 @@
 #!/bin/sh -x
 
 echo
-echo Changes should be made to *FAQ.tt* not FAQ.pm
+echo Changes should be made to FAQ.tt *not* FAQ.pm
 echo
 
 echo
@@ -16,7 +16,4 @@ mv FAQ.tt-out FAQ.pm
 perl Makefile.PL PREFIX=$PREFIX
 rm *.tar.gz
 make tardist
-
-
-
-
+pause *.tar.gz
