@@ -1,5 +1,7 @@
 Changes
 FAQ.pm
+FAQ.html
+FAQ.text
 MANIFEST
 Makefile.PL
 test.pl
