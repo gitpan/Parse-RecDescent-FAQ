@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.6 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.7 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -368,7 +368,7 @@ Do something like this:
 
 =head1 NEWLINE PROCESSING
 
-=head2 Parsing Windows Init Files
+=head2 Parsing Windows Init (.ini) Files
 
 I'm trying ot use Parse::RecDescent to parse a configuration file which
 looks like this:
@@ -409,6 +409,10 @@ looks like this:
 
 Also take a look at the example in section 11.2 in "Data Munging with Perl"
 by Dave Cross.
+
+=item * And the newest answer by the tireless Randal L. Schwartz: 
+
+  L<http://www.stonehenge.com/merlyn/UnixReview/col40.html>
 
 =back
 
@@ -1515,9 +1519,13 @@ list of string.
 
 =back
 
-=head2 A tutorial on Shallow versus Deep Copying 
+=head2 Shallow versus Deep Copying 
 
-Written by "Philip 'Yes, that's my address' Newton" <nospam.newton@gmx.li>
+=head3 An article by Randal Schwartz
+
+    L<http://www.stonehenge.com/merlyn/UnixReview/col30.html>
+
+=head3 A tutorial written by Philip Newton <nospam.newton@gmx.li>
 
 <tt>pod_include 'code/shallow-deep-copy-tutorial.answer'</tt>
 
