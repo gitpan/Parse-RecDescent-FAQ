@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-our $VERSION = sprintf '%s', q$Revision: 2.21 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.22 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -93,6 +93,11 @@ looks like this:
                 value:
                           /.*\n/
         }
+
+=item * Another Answer
+
+Also take a look at the example in section 11.2 in "Data Munging with Perl"
+by Dave Cross.
 
 =back
 
@@ -522,7 +527,8 @@ But, if speed is what you want then the second one is the way to go.
 
 =head2 Precompiling Grammars for Speed of Execution
 
-Take a look at Parse::RecDescent's precompilation option
+Take a look at Parse::RecDescent's precompilation option under the section
+titled "Precompiling parsers".
 
 =head2 Parse::RecDescent is slow on Really Big Files. How can I speed it up?
 
@@ -941,6 +947,29 @@ it saw '#atlantis' or 'attack' (because then you are committed).
 
 =back
 
+=head2 Collecting all error messages for processing
+
+Is there a way to to collect the parser-generated errors and use them later 
+on in my script?
+
+=over 4
+
+=item * Answer by Damian
+
+There's no "official" way (yet). A future release will allow you
+to create pluggable OO error handlers. At the moment the best 
+you can do is:
+
+	startrule: try_this
+		 | try_that
+		 | try_the_other
+		 | { ::do_something_with( $thisparser->{errors} ) }
+
+$thisparser->{errors} will contain a reference to an array-of-arrays,
+where each inner array contains the error message and the line number
+it occurred at.
+
+=back
 
 =head1 OTHER Parse::RecDescent QUESTIONS
 
@@ -1735,6 +1764,12 @@ is by far the likeliest explanation.
 
 =over 4
 
+=item * MySql to Oracle schema conversion utility
+
+Written in Parse::RecDescent by Tim Bunce:
+
+ http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw
+
 =item * Data::MultiValuedHash on search.cpan.org
 
 Transparent manipulation of single or multiply-valued Perl hash values.
@@ -1770,6 +1805,11 @@ common "balanced" forms of text, such as tags and parenthesized text.
 =item * "Mastering Regular Expressions" by Jeffrey Freidl
 
 You still need to know when to use /.*/ or /.+/ or /[^x]*/
+
+=item * "Data Munging with Perl" by Dave Cross
+
+Chapter 11 is focused on parsing with special emphasis on practical use of
+Parse::RecDescent.
 
 =item * "Object-Oriented Perl" by Damian Conway
 
