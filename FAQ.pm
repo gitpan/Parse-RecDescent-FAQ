@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 2.24 $ =~ /Revision:\s+(.*)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 2.25 $ =~ /Revision:\s+(.*)\s+/ ;
 
 1;
 __END__
@@ -341,6 +341,21 @@ parser.
 
 =item * Answer by Yves Orton
 
+Heres the required patch 
+
+ # Line 1692 of Parse::RecDescent reads
+
+ my $nextnamespace = "namespace000001";
+
+ # Add This Method
+ sub set_namespace {
+   local $_=$_[1];
+   croak "$_ is not a legal namespace." if /[^\w]/;
+   $_.="00" unless /\d+$/; # Ensure our namespace has a number at the end
+   $nextnamespace=$_;
+ }
+
+ # And then just call
  Parse::RecDescent->set_namespace("MyNameSpace");
 
 

@@ -1,4 +1,14 @@
+#!/bin/sh
+
 #!/bin/sh -x
+
+echo
+echo Changes should be made to *FAQ.tt* not FAQ.pm
+echo
+
+echo
+echo I hope you bumped the version number
+echo
 
 cp ~/bin/tt.pl .
 ~/bin/tt.pl FAQ.tt
