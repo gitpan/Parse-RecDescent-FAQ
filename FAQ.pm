@@ -1,9 +1,9 @@
-package Parse::RecDescent::FAQ;  # -*- auto-fill -*-
+package Parse::RecDescent::FAQ; 
 
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.25 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.91 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -16,12 +16,29 @@ Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent.
 
 =head2 Is Parse::RecDescent LL(1)? LL(N)? LR(1)? LR(N)?
 
-A very complete answer to that question is available here:
+=over 4
 
-    http://www.perlmonks.org/index.pl?lastnode_id=480&node_id=153155
+=item Answer by Yves Orton:
+
+I have a data structure which is
+
+a hash of entries
+where
+an entry is a list/array of sets
+
+I have also a grammar that can parse the syntax of the text files that
+contain the data I want to fill this structure with. Until here
+everything is ok.
+
+Problem: I cannot figure out how to actually FILL the parsed data into
+the structure. I can only decide if a string is grammatically correct
+or not.
 
 
-Also see  L</Left-recursion> under L</PARSER BEHAVIOR>
+
+=back
+
+Also see the "Left-recursion" section under "PARSER BEHAVIOR"
 
 =head1 DEBUGGING
 
@@ -60,66 +77,6 @@ name of the offending rule).
 
 =head1 PARSER BEHAVIOR
 
-=head2 Using rule ordering to get the desired match
-
-This logically belongs under L</THINGS NOT TO DO>, but I put it here
-for maximum reader exposure.
-
-Plagiarized from http://perlmonks.org/index.pl?node_id=303626 :
-
-I have the following BNF and am trying to get it to work with RecDescent. 
-I'm evaluating the WHERE condition on a simplified SQL statement.
-
-This is the BNF:
-
-	<cond> ::= <x> [ "OR" <cond> ]
-	<x>    ::= <y> [ "AND" <y> ]
-	<y>    ::= "(" <cond> ")" | <z> <op> <z>
-	<z>    ::= [tabname"."]colname | <value>
-	<op>   ::= "<" | ">" | "=" | "<>" | "<=" | ">="
-
-C<tabname> and C<colname> are identifiers which have at most 20 characters, 
-start with a letter, and cannot end in an underscore. 
-C<colname> as seen above can take the forme C<tabname.colname>
-
-This is my grammar as I've converted it:
-
-	condition : x | x /OR/i condition
-	x : y | y /AND/i y
-	y : "(" condition ")" | z OP z 
-	z : TABCOLNAME | COLNAME | VALUE
-    
-	# Terminals
-	TABCOLNAME : /([a-z]{1}[\w]{0,18}[^_])\.([a-z]{1}[\w]{0,18}[^_\ ])/i
-	COLNAME : /([a-z]{1}[\w]{0,18}[^_\ ])/i
-	VALUE : /(\w+)/ix
-	OP : /(<>|<=|>=|=|<|>)/
-if my string is when parsing 
-
-	"ssn = 1234 and name = bob" 
-
-only 
-
-	"ssn = 1234" 
-
-gets put in @item.
-
-And Abigail doth respondeth:
-
-That's because you give Parse::RecDescent options for the x and y
-rules. PRD will, just like Perl regexes, try alternatives in order,
-left one first. So, if PRD has to choose between C<y> and C<y /AND/i y>,
-it'll first do the C<y>, and only if that alternative fails, it'll try
-the alternative. 
-
-You can fix this by requiring that after matching the SQL statement, it should match the end of the string. But, for efficiency, also reorganize the rules:
-
-	condition:  x /OR/i x
-	         |  x
-	x:          y /AND/i y
-	         |  y
-
-
 =head2 Insuring a top-level rule match
 
 I have a question regarding subrules within grammars used with
@@ -141,7 +98,7 @@ not being matched. I am sure this is a relatively straight-forward
 oversight within the grammar on my part, but I am at a loss as to how
 to correct this.  
 
-Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18.''
+Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18, <F> line 14.''
 
 =head3 Answer by Randal L. Schwartz
 
@@ -294,9 +251,9 @@ which is a literal dot.
 
 =head2 Left-recursion
 
-=head3 Elimination of
+=over 4
 
-On elimination of left-recursion Randal Schwartz states:
+=item * On elimination of left-recursion Randal Schwartz states:
 
 I had a fun time eliminating a mutual left-recursion problem for
 my "Data-Undumper" program, which used P::RD as an essential component.
@@ -304,21 +261,18 @@ See my discussion of such at
 
  http://www.stonehenge.com/merlyn/LinuxMag/col29.html
 
-Also, regarding elimination see this Perlmonks node:
+=item * Also, regarding elimination see this Perlmonks node:
 
  http://www.perlmonks.org/index.pl?lastnode_id=6364&node_id=153155
 
-And finally "The man(1) of descent" by Conway in The Perl Journal
-issue 12 (also in tutorial directory of the distribution) discusses
-left recursion and its workaround.
-
-=head3 Detection by PRD
+=item * Regarding detection of left-recursion, Conway states:
 
 RecDescent does a complete graph traversal looking for n-ary
 left-recursion loops and fails to compile the grammar if it finds any
 left-recursive loop involving any number of rules. It has done this since its
 earliest versions.
 
+=back
 
 
 
@@ -472,13 +426,7 @@ by Dave Cross.
 
 =item * And the newest answer by the tireless Randal L. Schwartz: 
 
-  http://www.stonehenge.com/merlyn/UnixReview/col40.html
-
-=item * And a CPAN release:
-
-Config::Yacp,
-
-	http://search.cpan.org/~tstanley/Config-Yacp-1.16/
+  L<http://www.stonehenge.com/merlyn/UnixReview/col40.html>
 
 =back
 
@@ -1909,15 +1857,15 @@ a production the same regardless of whether P::RD returns a string or a
 list of string.
 
 =over 4
-=item * Use L<Scalar::Listify|Scalar::Listify> from CPAN.
+=item * Use Scalar::Listify from CPAN.
 
 =back
 
 =head2 Shallow versus Deep Copying 
 
 =head3 An article by Randal Schwartz
-    
-    http://www.stonehenge.com/merlyn/UnixReview/col30.html
+
+    L<http://www.stonehenge.com/merlyn/UnixReview/col30.html>
 
 =head3 A tutorial written by Philip Newton <nospam.newton@gmx.li>
 
@@ -2222,13 +2170,6 @@ is by far the likeliest explanation.
 
 =back
 
-=head2 Data::MultiValuedHash on search.cpan.org
-
-L<Data::MultiValuedHash> allows for
-transparent manipulation of single or multiply-valued Perl hash values.
-If you've done any recdescent-grokking, you know how useful this can be
-when extracting information from a parse.
-
 =head2 Regular Expressions
 
 =head3 Shortest match instead of longest match
@@ -2278,16 +2219,46 @@ Ok, so he hasn't named it yet. It's available online for free!
 You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 
-=head1 RESOURCES
+=head1 Practical Parser Examples
 
-=head2 Practical Parser Examples
+=head2 Module dependency expression parser
 
-=head3 Config::Yacp
 
-Config::Yacp is a module which parses INI-style config
-files using Parse::RecDescent.
+This code by Marc Prewitt was a response to 
+Mark Dominus' Perl 'Expert' Quiz of the Week #24 (Module dependency
+evaluation). This quiz of the week was a practical challenge to find
+code that could end up useable within Module::Build. The requirement
+was to allow for the module prerequisite to be specified using boolean
+logic, e.g.: 
 
-=head3 XSH - The XML Editing Shell
+	requires => q[
+                 (DBD::Pg && DateTime::Format::Pg)
+                   ||
+                 (DBD::mysql && DateTime::Format::mysql)
+             ]
+
+If we need to, we can also include version specifications:
+
+             requires => q[
+                 ( DBD::Pg > 1.1 && DateTime::Format::Pg )
+                   ||
+                 ( DBD::mysql <= 1.2 && DateTime::Format::mysql )
+             ]
+
+The neat thing about the solution is that after coding it, Marc had
+PRD generate a parser that ran independantly from PRD itself.
+
+This solution, according to the judge, "... is
+probably the best solution to use if full expression parsing is
+desired for Module::Build."
+
+Marc's outline of his solution and link to full code is available
+here:
+
+	http://perl.plover.com/~alias/list.cgi?1:mss:2279:homdmfmmaelddeehiooi
+
+
+=head2 XSH - The XML Editing Shell
 
 XSH:
 
@@ -2295,7 +2266,7 @@ L<http://xsh.sourceforge.net/>
 
 uses Parse::RecDescent
 
-=head3 Parsing Symbolic Expressions / Boolean Logic
+=head2 Parsing Symbolic Expressions / Boolean Logic
 
 Says Stefan Mueller:
 
@@ -2305,77 +2276,75 @@ You can find a working example grammar for more involved
 part of the L<Math::Symbolic> distribution. 
 It should be fairly easy to modify it to work for boolean logic. 
 
-=head3 MySql to Oracle schema conversion utility
+=head2 MySql to Oracle schema conversion utility
 
 Written in Parse::RecDescent by Tim Bunce:
 
-http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw
-
-=head2 Web Resources
+L<http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw>
 
 
-=head3 Hugh Myer's tips on Parse::RecDescent
 
-http://www.perlmonks.org/index.pl?node_id=180778
+=head1 RESOURCES
+
+
+=head2 Craig's Parse::Recdescent Area
+
+Contains an article (in English)  published during the Zweiter Perl Workshop
+as well as some slides for a presentation:
+
+     http://www.informatik.uni-trier.de/~smith/perl/recdescent/
+    
+=head2 Hugh Myer's tips on Parse::RecDescent
+
+    http://www.perlmonks.org/index.pl?node_id=180778
 
 17 tips you cannot do without.
 
-=head3 Craig's Parse::Recdescent Area
-
-L<http://www.informatik.uni-trier.de/~smith/perl/recdescent/>
-    
-Contains an article (in English) published during the Zweiter Perl Workshop
-as well as some slides for a presentation:
 
 
-=head3 http://www.PerlMonks.org and irc://efnet/perlhelp
 
-Useful sites to get fast help on Perl.
+=head2 Data::MultiValuedHash on search.cpan.org
 
+Transparent manipulation of single or multiply-valued Perl hash values.
 
-=head2 Publications
+=head2 Parse::Recdescent tutorial at www.perl.com
 
-=head3 "Parse::Recdescent Tutorial", www.perl.com, 6/13/2001, Jeffrey Goff
+http://www.perl.com/pub/a/2001/06/13/recdecent.html
 
-L<http://www.perl.com/pub/a/2001/06/13/recdecent.html>
+=head2 "Safe undumping"
 
-=head3 "Parsing Interesting Things", UnixReview 12/2001, Randal Schwartz
-
-L<http://www.stonehenge.com/merlyn/UnixReview/col40.html>
-
-=head3 "Safe Undumping", Linux Magazine, 10/2001, Randal Schwartz
-
-Randal Schwartz uses
+In this Linux Magazine article by Randal Schwartz uses
 Parse::RecDescent to parse Data::Dumper output. Not fast, but quite
 complete. 
 
-L<http://www.stonehenge.com/merlyn/LinuxMag/col29.html>
-
-=head3 "Data Munging with Perl" by Dave Cross
-
-Chapter 11 is focused on parsing with special emphasis on practical use of
-Parse::RecDescent.
-
-=head3 "Object-Oriented Perl" by Damian Conway
-
-This book will aid you in complexity management for large grammars.
+=head2 "Parsing Interesting Things", SysAdminMag.COM, December 2001, Randal Schwartz
 
 
-=head2 Non Parse::RecDescent Perl Parsers
 
-=head3 py
+=head2 py
 
 py, which I assume is short for C<parse yacc>, is a program by
 Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
 
 It is obtainable from http://perl.plover.com/py/
 
-=head3 Parse::YAPP
+=head2 Parse::YAPP
 
 A bottom-up parser which will be familiar to those who
 have used Lex and Yacc. Parse::RecDescent is a top-down parser.
 
+=head2 "Data Munging with Perl" by Dave Cross
 
+Chapter 11 is focused on parsing with special emphasis on practical use of
+Parse::RecDescent.
+
+=head2 "Object-Oriented Perl" by Damian Conway
+
+This book will aid you in complexity management for large grammars.
+
+=head2 http://www.PerlMonks.org and irc://efnet/perlhelp
+
+A useful site to get fast help on Perl.
 
 =head1 SOURCES for FAQ MATERIAL
 
@@ -2423,7 +2392,7 @@ The (unwitting) contributors to this FAQ
 
 =item * Matthew Wickline
 
-=item * Randal L. Schwartz
+=item * Randal L. Schwartz (merlyn), Perl hacker
 
 =item * Stefan Mueller
 
