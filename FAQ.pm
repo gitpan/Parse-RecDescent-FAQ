@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.91 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.94 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -481,6 +481,55 @@ Try this instead:
          newline: /\n/
 
 =back
+
+=head3  Example In a line-delimited grammar
+
+ I want to use Parse::RecDescent to parse a certain assembly language. In assembly, data is "line oriented", that is newline is the statement separator. Simplified demonstration:
+ 
+ command1 arg1 \n
+ command2 arg2 \n
+ 
+ Defines two statements. More than one statement on a line is illegal, a statement broken to two lines is also illegal.
+ 
+ Now, P::RD has an issue with newlines. It swallows them by default. There is a workaround using the "skip" directive, but it became tedious and my grammar code is full of <skip: qr/ \t*/> directives.
+ 
+ Is there an easier way ?
+ 
+ What I want, for starters, is a trivial "command arg" pairs for statements:
+ 
+ line -> command arg "\n"
+
+
+=over 4
+
+=item * Answer by Damian:
+
+ <skip> tells RecDescent what to skip before trying each 
+ terminal. Normally that's any optional whitespace matched by the 
+ pattern C</\s*/>. 
+  
+ But, if newlines (which would normally be skipped by the above 
+ pattern) are significant in your syntax, then you need to change the 
+ skipping pattern so that RecDescent doesn't skip newlines. And then 
+ match the newlines explicitly. 
+  
+ For example: 
+  
+      program : <skip: qr/[^\S\n]/>    # Ignore non-newline whitespace 
+                statement(s) 
+  
+      statement : command arg(s) "\n" 
+  
+      command: /\w+/ 
+  
+      args  :  /\d+/ | alphanum 
+  
+      alphanum :  /[A-Za-z0-9/ 
+
+
+=back
+
+=cut
 
 =head1 COLUMN-ORIENTED PROCESSING
 
@@ -2221,6 +2270,16 @@ You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 =head1 Practical Parser Examples
 
+=head2 Article comparing Gene Parsing with PRD and other approaches
+
+"The Making of Entrez Gene parsers in Perl using
+Parse::RecDescent, Parse::Yapp, Perl-byacc and Regex" by
+Dr. Mingyi Liu 
+
+is available from:
+
+L<http://sourceforge.net/docman/display_doc.php?docid=27420&group_id=133629>
+
 =head2 Module dependency expression parser
 
 
@@ -2320,19 +2379,6 @@ complete.
 =head2 "Parsing Interesting Things", SysAdminMag.COM, December 2001, Randal Schwartz
 
 
-
-=head2 py
-
-py, which I assume is short for C<parse yacc>, is a program by
-Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
-
-It is obtainable from http://perl.plover.com/py/
-
-=head2 Parse::YAPP
-
-A bottom-up parser which will be familiar to those who
-have used Lex and Yacc. Parse::RecDescent is a top-down parser.
-
 =head2 "Data Munging with Perl" by Dave Cross
 
 Chapter 11 is focused on parsing with special emphasis on practical use of
@@ -2345,6 +2391,38 @@ This book will aid you in complexity management for large grammars.
 =head2 http://www.PerlMonks.org and irc://efnet/perlhelp
 
 A useful site to get fast help on Perl.
+
+=head2 Other Parsing Engines
+
+=head3 py
+
+py, which I assume is short for C<parse yacc>, is a program by
+Mark-Jason Dominus which parses GNU Bison output to produce Perl parsers.
+
+It is obtainable from http://perl.plover.com/py/
+
+=head3 Parse::YAPP
+
+A bottom-up parser which will be familiar to those who
+have used Lex and Yacc. Parse::RecDescent is a top-down parser.
+
+
+=head3 Parse::Earley
+
+L<search.cpan.org/dist/Parse-Earley>
+
+=head3 Perl6::Rules
+
+L<search.cpan.org/dist/Perl6-Rules>
+
+=head3 perl-byacc
+
+L<http://www.instantweb.com/D/dictionary/foldoc.cgi?perl-byacc>
+
+=head3 Domain-specific parsers
+
+On CPAN there are many parsers for particular tasks such as CSV, HTML,
+XML, etc. 
 
 =head1 SOURCES for FAQ MATERIAL
 

@@ -19,6 +19,7 @@ code/scored-grammar.answer
 code/shallow-deep-copy-tutorial.answer
 code/xor-alternation-matching.perl
 EDIT_FAQ.tt.DO_NOT_EDIT_FAQ.pm
+FAQ.html
 FAQ.pm
 FAQ.tt
 Makefile.PL

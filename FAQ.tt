@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.93 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.94 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -1660,6 +1660,16 @@ You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 
 =head1 Practical Parser Examples
+
+=head2 Article comparing Gene Parsing with PRD and other approaches
+
+"The Making of Entrez Gene parsers in Perl using
+Parse::RecDescent, Parse::Yapp, Perl-byacc and Regex" by
+Dr. Mingyi Liu 
+
+is available from:
+
+L<http://sourceforge.net/docman/display_doc.php?docid=27420&group_id=133629>
 
 =head2 Module dependency expression parser
 
