@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.8 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.9 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -1647,7 +1647,17 @@ You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 =head1 RESOURCES
 
-=head2 Parsing Symbolic Expressions / Boolean Logic
+=head2 Practical Parser Examples
+
+=head3 XSH - The XML Editing Shell
+
+XSH:
+
+L<http://xsh.sourceforge.net/>
+
+uses Parse::RecDescent
+
+=head3 Parsing Symbolic Expressions / Boolean Logic
 
 Says Stefan Mueller:
 
@@ -1656,6 +1666,13 @@ You can find a working example grammar for more involved
 *arithmetic* expressions in the L<Math::Symbolic::Parser> module that is 
 part of the L<Math::Symbolic> distribution. 
 It should be fairly easy to modify it to work for boolean logic. 
+
+=head3 MySql to Oracle schema conversion utility
+
+Written in Parse::RecDescent by Tim Bunce:
+
+L<http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw>
+
 
 =head2 Craig's Parse::Recdescent Area
 
@@ -1671,11 +1688,6 @@ as well as some slides for a presentation:
 17 tips you cannot do without.
 
 
-=head2 MySql to Oracle schema conversion utility
-
-Written in Parse::RecDescent by Tim Bunce:
-
- http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw
 
 
 =head2 Data::MultiValuedHash on search.cpan.org
