@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.7 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 3.8 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -772,6 +772,18 @@ Instead, take the approach shown by merlyn:
 Then just define C<QuotedText>, C<Comma>, and you're done!
 
 =head1 OPTIMIZING YOUR GRAMMARS
+
+=head2 Dan Sugalski's Practice and Theory of Optimizing PRD Grammars
+
+This link is excellent. So excellent in fact, that I took the time to mirror
+it to my site to avoid it ever being lost:
+
+L<http://www.urth.org/~metaperl/domains/semantic-elements.com/perl/prd/dans-blog/000235.html>
+
+This link provides an excellent discussion of hits and misses in optimizing a
+grammar whose initial parse time started out at around minutes. After whittling
+it down to 5 minutes, Dan is still not happy and continues with even
+more aggressive optimizations! Well worth the read.
 
 =head2 Eliminate backtracking when possible
 
