@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 3.94 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = sprintf '%s', q$Revision: 1.2 $ =~ /Revision:\s+(\S+)\s+/ ;
 
 1;
 __END__
@@ -42,7 +42,10 @@ Also see the "Left-recursion" section under "PARSER BEHAVIOR"
 
 =head1 DEBUGGING
 
+  
+
 =head2 Flags you can set
+
 Paraphrased from Yves Orton:
 
 To understand more about why your parser is not behaving as it should
@@ -621,6 +624,25 @@ So if you would like to state the test in the positive, then do this:
 
 Be sure to see the example see the RESOURCES section at the end
 for even more nosebleed parsing examples.
+
+=head2 Subrule matches N times, where N is parsed on the fly
+
+Per this link:
+
+L<http://perlmonks.org/?node_id=522495> we have a case where the
+future-matching is done as a function of the current matching.
+
+=head2 Rule-building by interpolating an array of choices
+
+Let's say you had to parse phrases like "6 red balls". You see this as
+C<"$quantity $color $item">. Now, the colors which are acceptable for
+parsing vary from program to program and so the rule which matches the
+colors needs to be variable.
+
+We see a fruitful discussion and solution of this problem here:
+
+L<http://perlmonks.org/?node_id=384098>
+
 
 =head2 Macro processing
 

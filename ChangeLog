@@ -1,3 +1,10 @@
+2006-01-12  metaperl  <metaperl@gmail.com>
+
+	* Took results from this Perlmonks search:
+	  http://perlmonks.org/?node=Recdescent+dynamic&go_button=Search
+
+	  to add 2 new generative parsing questions
+
 2003-10-16  metaperl  <metaperl@moksha>
 
 	* FAQ.tt (Parse): added Hugh Myer's 17 tips on prd

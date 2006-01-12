@@ -84,6 +84,8 @@
 	<li><a href="#modular___generative___creative___hairy_parsing">MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING</a></li>
 	<ul>
 
+		<li><a href="#subrule_matches_n_times__where_n_is_parsed_on_the_fly">Subrule matches N times, where N is parsed on the fly</a></li>
+		<li><a href="#rulebuilding_by_interpolating_an_array_of_choices">Rule-building by interpolating an array of choices</a></li>
 		<li><a href="#macro_processing">Macro processing</a></li>
 		<li><a href="#cloning_parsers_but_giving_each_parser_it_own_package">Cloning parsers but giving each parser it own package</a></li>
 		<li><a href="#parsing_sentences_to_generate_sentences">Parsing sentences to generate sentences</a></li>
@@ -253,10 +255,11 @@ or not.</p>
 </p>
 <hr />
 <h1><a name="debugging">DEBUGGING</a></h1>
+<p></p>
 <p>
 </p>
-<h2><a name="flags_you_can_set_paraphrased_from_yves_orton_">Flags you can set
-Paraphrased from Yves Orton:</a></h2>
+<h2><a name="flags_you_can_set">Flags you can set</a></h2>
+<p>Paraphrased from Yves Orton:</p>
 <p>To understand more about why your parser is not behaving as it should
 take advantage of the follow variables:</p>
 <pre>
@@ -740,6 +743,21 @@ and is guaranteed to make a production fail immediately.</p>
 <h1><a name="modular___generative___creative___hairy_parsing">MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING</a></h1>
 <p>Be sure to see the example see the RESOURCES section at the end
 for even more nosebleed parsing examples.</p>
+<p>
+</p>
+<h2><a name="subrule_matches_n_times__where_n_is_parsed_on_the_fly">Subrule matches N times, where N is parsed on the fly</a></h2>
+<p>Per this link:</p>
+<p><a href="http://perlmonks.org/?node_id=522495">http://perlmonks.org/</a> we have a case where the
+future-matching is done as a function of the current matching.</p>
+<p>
+</p>
+<h2><a name="rulebuilding_by_interpolating_an_array_of_choices">Rule-building by interpolating an array of choices</a></h2>
+<p>Let's say you had to parse phrases like ``6 red balls''. You see this as
+<code>&quot;$quantity $color $item&quot;</code>. Now, the colors which are acceptable for
+parsing vary from program to program and so the rule which matches the
+colors needs to be variable.</p>
+<p>We see a fruitful discussion and solution of this problem here:</p>
+<p><a href="http://perlmonks.org/?node_id=384098">http://perlmonks.org/</a></p>
 <p>
 </p>
 <h2><a name="macro_processing">Macro processing</a></h2>
