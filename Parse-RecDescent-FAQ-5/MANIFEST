@@ -26,11 +26,8 @@ Makefile.PL
 MANIFEST
 META.yml			Module meta-data (added by MakeMaker)
 Parse-RecDescent-FAQ-1.2.tar
-Parse-RecDescent-FAQ-5/code/incremental-data-structure.question
-Parse-RecDescent-FAQ-5/EDIT_FAQ.tt.DO_NOT_EDIT_FAQ.pm
-Parse-RecDescent-FAQ-5/MANIFEST
-Parse-RecDescent-FAQ-5/pod2htmd.tmp
-Parse-RecDescent-FAQ-5/view
+Parse-RecDescent-FAQ-1.2.tar.gz
+Parse-RecDescent-FAQ-4.0.tar.gz
 pod2htmd.tmp
 pod2htmi.tmp
 release

@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = sprintf '%s', q$Revision: 1.2 $ =~ /Revision:\s+(\S+)\s+/ ;
+our $VERSION = '5.00';
 
 1;
 __END__
@@ -621,6 +621,7 @@ So if you would like to state the test in the positive, then do this:
 =back
 
 =head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
+
 
 Be sure to see the example see the RESOURCES section at the end
 for even more nosebleed parsing examples.
@@ -2367,6 +2368,9 @@ L<http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&
 
 =head1 RESOURCES
 
+=head2 "Some Parse::RecDescent Tutorials"
+
+L<http://perlmonks.org/?node_id=108182>
 
 =head2 Craig's Parse::Recdescent Area
 
@@ -2379,7 +2383,7 @@ as well as some slides for a presentation:
 
     http://www.perlmonks.org/index.pl?node_id=180778
 
-17 tips you cannot do without.
+17 tips you cannot do without... recently updated!
 
 
 
