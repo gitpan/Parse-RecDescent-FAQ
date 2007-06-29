@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent.</title>
-<link rev="made" href="mailto:root@localhost" />
+<link rev="made" href="mailto:gerrit@familiehaase.de" />
 </head>
 
 <body style="background-color: white">
@@ -375,6 +375,11 @@ See the Parse::RecDescent docs for details.</p>
         program: &lt;skip: qr{\s* (/[*] .*? [*]/ \s*)*}x&gt; statement(s)</pre>
 <pre>
         statement: # etc...</pre>
+<p>However, thanks to Chas Owens, we have an update that works for
+him. Instead of just <code>x</code> as a regular expression modifier he had to
+add s as well:</p>
+<pre>
+ program: &lt;skip: qr{\s* (/[*] .*? [*]/ \s*)*}xs&gt; statement(s)</pre>
 <p>
 </p>
 <h3><a name="quoting_within_a_skip_expression_">Quoting within a skip expression:</a></h3>
@@ -2348,6 +2353,8 @@ Conveniently available via NNTP at:
 <p>The author of Parse::RecDescent is Damian Conway.</p>
 <p>The (unwitting) contributors to this FAQ</p>
 <ul>
+<li><strong><a name="item_chas_owens">Chas Owens</a></strong><br />
+</li>
 <li><strong><a name="item_brent_dax">Brent Dax</a></strong><br />
 </li>
 <li><strong><a name="item_damian_conway">Damian Conway</a></strong><br />

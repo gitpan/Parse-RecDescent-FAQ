@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = '5.00';
+our $VERSION = '5.02';
 
 1;
 __END__
@@ -190,6 +190,15 @@ Here is an example of removing C comments in program text
 	program: <skip: qr{\s* (/[*] .*? [*]/ \s*)*}x> statement(s)
 
 	statement: # etc...
+
+However, thanks to Chas Owens, we have an update that works for
+him. Instead of just C<x> as a regular expression modifier he had to
+add s as well:
+
+
+ program: <skip: qr{\s* (/[*] .*? [*]/ \s*)*}xs> statement(s)
+
+
 
 =head3 Quoting within a skip expression:
 
@@ -2484,6 +2493,8 @@ The (unwitting) contributors to this FAQ
 
 =over 4 
 
+=item * Chas Owens
+
 =item * Brent Dax
 
 =item * Damian Conway
@@ -2501,6 +2512,7 @@ The (unwitting) contributors to this FAQ
 =item * Stefan Mueller
 
 =item * Yves Orton
+
 
 =back 
 
