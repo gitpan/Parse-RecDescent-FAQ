@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = '5.02';
+our $VERSION = '5.04';
 
 1;
 __END__
@@ -425,6 +425,11 @@ by Dave Cross.
 =item * And the newest answer by the tireless Randal L. Schwartz: 
 
   L<http://www.stonehenge.com/merlyn/UnixReview/col40.html>
+
+=item * And this question pops up again on perlmonks 2007-08-16:
+
+  L<http://perlmonks.org/?node_id=632838>
+
 
 =back
 
