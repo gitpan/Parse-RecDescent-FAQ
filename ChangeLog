@@ -1,3 +1,17 @@
+2007-11-07  Terrence Brannon  <W049945@LNOHPOL8170MC1.NAEAST.AD.JPMORGANCHASE.COM>
+
+	* For version 5.06:
+	- Created section on relevant CPAN modules and added:
+	** Data::Match
+	** Parse::RecDescent::Consumer
+	** Regexp::(List|Assemble)
+	** Scalar::Listify
+	- Mentioned the VIM syntax file
+
+2007-09-05  Terrence Brannon  <W049945@LNOHPOL8170MC1.NAEAST.AD.JPMORGANCHASE.COM>
+
+	* added information on parsing large files
+
 2006-01-12  metaperl  <metaperl@gmail.com>
 
 	* Took results from this Perlmonks search:

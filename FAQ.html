@@ -156,6 +156,7 @@
 	<li><a href="#programming_topics_germane_to_parse__recdescent_use">PROGRAMMING TOPICS GERMANE TO Parse::RecDescent USE</a></li>
 	<ul>
 
+		<li><a href="#getting_large_files_into_memory">Getting large files into memory</a></li>
 		<li><a href="#double_vs_singlequoted_strings">Double vs Single-quoted strings</a></li>
 		<li><a href="#tracking_text_parsed_between_phases_of_the_parse">Tracking text parsed between phases of the parse</a></li>
 		<li><a href="#unconditionally_listifying_scalars">Unconditionally listifying scalars</a></li>
@@ -172,7 +173,6 @@
 
 			<li><a href="#shortest_match_instead_of_longest_match">Shortest match instead of longest match</a></li>
 			<li><a href="#tutorial_on_positive_and_negative_lookahead_and_lookbehind">Tutorial on positive and negative lookahead and lookbehind</a></li>
-			<li><a href="#text__balanced_and_regexp__common__balanced">Text::Balanced  and Regexp::Common::balanced</a></li>
 			<li><a href="#japhy_s_book_on_regular_expressions">Japhy's Book on Regular Expressions</a></li>
 			<li><a href="#mastering_regular_expressions_by_jeffrey_freidl">``Mastering Regular Expressions'' by Jeffrey Freidl</a></li>
 		</ul>
@@ -194,13 +194,23 @@
 
 		<li><a href="#some_parse__recdescent_tutorials">``Some Parse::RecDescent Tutorials''</a></li>
 		<li><a href="#craig_s_parse__recdescent_area">Craig's Parse::Recdescent Area</a></li>
-		<li><a href="#data__multivaluedhash_on_search_cpan_org">Data::MultiValuedHash on search.cpan.org</a></li>
 		<li><a href="#parse__recdescent_tutorial_at_www_perl_com">Parse::Recdescent tutorial at www.perl.com</a></li>
 		<li><a href="#safe_undumping">``Safe undumping''</a></li>
 		<li><a href="#parsing_interesting_things__sysadminmag_com__december_2001__randal_schwartz">``Parsing Interesting Things'', SysAdminMag.COM, December 2001, Randal Schwartz</a></li>
 		<li><a href="#data_munging_with_perl_by_dave_cross">``Data Munging with Perl'' by Dave Cross</a></li>
 		<li><a href="#objectoriented_perl_by_damian_conway">``Object-Oriented Perl'' by Damian Conway</a></li>
 		<li><a href="#http___www_perlmonks_org_and_irc___efnet_perlhelp"><a href="http://www.PerlMonks.org">http://www.PerlMonks.org</a> and <a href="irc://efnet/perlhelp">irc://efnet/perlhelp</a></a></li>
+		<li><a href="#cpan_modules_of_potential_utility">CPAN Modules of Potential Utility</a></li>
+		<ul>
+
+			<li><a href="#data__match">Data::Match</a></li>
+			<li><a href="#data__multivaluedhash_on_search_cpan_org">Data::MultiValuedHash on search.cpan.org</a></li>
+			<li><a href="#parse__recdescent__consumer">Parse::RecDescent::Consumer</a></li>
+			<li><a href="#regexp_assemble">Regexp:Assemble</a></li>
+			<li><a href="#text__balanced_and_regexp__common__balanced">Text::Balanced  and Regexp::Common::balanced</a></li>
+			<li><a href="#scalar__listify">Scalar::Listify</a></li>
+		</ul>
+
 		<li><a href="#other_parsing_engines">Other Parsing Engines</a></li>
 		<ul>
 
@@ -212,6 +222,7 @@
 			<li><a href="#domainspecific_parsers">Domain-specific parsers</a></li>
 		</ul>
 
+		<li><a href="#a_vim_syntax_file_for_parse__recdescent">a VIM Syntax File for Parse::RecDescent</a></li>
 	</ul>
 
 	<li><a href="#sources_for_faq_material">SOURCES for FAQ MATERIAL</a></li>
@@ -1789,6 +1800,13 @@ change things like this:</p>
 <h1><a name="programming_topics_germane_to_parse__recdescent_use">PROGRAMMING TOPICS GERMANE TO Parse::RecDescent USE</a></h1>
 <p>
 </p>
+<h2><a name="getting_large_files_into_memory">Getting large files into memory</a></h2>
+<p>An issue related to PRD is how to get huge files into memory for parsing. 
+Check out this link:</p>
+<p><a href="http://perlmonks.org/?node_id=636233">http://perlmonks.org/</a></p>
+<p>for some approaches to this problems.</p>
+<p>
+</p>
 <h2><a name="double_vs_singlequoted_strings">Double vs Single-quoted strings</a></h2>
 <p>I'm playing around with the &lt;skip:&gt; directive and I've noticed
 something interesting that I can't explain to myself.</p>
@@ -2193,14 +2211,6 @@ regexps:</a></h3>
  <a href="http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html">http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html</a></pre>
 <p>
 </p>
-<h3><a name="text__balanced_and_regexp__common__balanced">Text::Balanced  and Regexp::Common::balanced</a></h3>
-<p>Use this instead of writing hairy regular expressions to match certain
-common ``balanced'' forms of text, such as tags and parenthesized text.</p>
-<p>See <a href="http://perlmonks.org/index.pl?node_id=208285">http://perlmonks.org/index.pl?node_id=208285</a>
-for an example of where it would be better suited for the task than
-Parse::RecDescent.</p>
-<p>
-</p>
 <h3><a name="japhy_s_book_on_regular_expressions">Japhy's Book on Regular Expressions</a></h3>
 <p>Ok, so he hasn't named it yet. It's available online for free!</p>
 <pre>
@@ -2294,10 +2304,6 @@ as well as some slides for a presentation:</p>
 <p>17 tips you cannot do without... recently updated!</p>
 <p>
 </p>
-<h2><a name="data__multivaluedhash_on_search_cpan_org">Data::MultiValuedHash on search.cpan.org</a></h2>
-<p>Transparent manipulation of single or multiply-valued Perl hash values.</p>
-<p>
-</p>
 <h2><a name="parse__recdescent_tutorial_at_www_perl_com">Parse::Recdescent tutorial at www.perl.com</a></h2>
 <p><a href="http://www.perl.com/pub/a/2001/06/13/recdecent.html">http://www.perl.com/pub/a/2001/06/13/recdecent.html</a></p>
 <p>
@@ -2322,6 +2328,112 @@ Parse::RecDescent.</p>
 </p>
 <h2><a name="http___www_perlmonks_org_and_irc___efnet_perlhelp"><a href="http://www.PerlMonks.org">http://www.PerlMonks.org</a> and <a href="irc://efnet/perlhelp">irc://efnet/perlhelp</a></a></h2>
 <p>A useful site to get fast help on Perl.</p>
+<p>
+</p>
+<h2><a name="cpan_modules_of_potential_utility">CPAN Modules of Potential Utility</a></h2>
+<p>
+</p>
+<h3><a name="data__match">Data::Match</a></h3>
+<p><a href="/Data/Match.html">Data::Match</a> is an excellent tool for parse tree foraging.
+A typical autoaction is 
+  $::RD_AUTOACTION = q { [@item] } ;</p>
+<p>which leads to deeply nested parse trees.</p>
+<p>I first inquired about various tools for spelunking in such trees:
+  <a href="http://perlmonks.org/?node_id=646560">http://perlmonks.org/?node_id=646560</a></p>
+<p>And am very happy so far with Data::Match. Here is a sample parse tree
+from my parse:</p>
+<pre>
+ $VAR1 = [
+          'simple_house',
+          [
+            'pre_simple',
+            [
+              'geoloc',
+              [
+                'geoloc_',
+                [
+                  'place',
+                  [
+                    'city',
+                    'taipei'
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            'house',
+            'house'
+          ],
+          []
+        ];</pre>
+<p>Now, my goal is to get at the inner-most array in $VAR1-&gt;[1]:</p>
+<pre>
+    [
+                    'city',
+                    'taipei'
+    ]</pre>
+<p>And with Data::Match, I can do so in a very definitional fashion:</p>
+<pre>
+ my $match = match
+    (
+     # The parse tree
+     $self-&gt;{parse_result}[1], 
+ 
+     # The Data::Match pattern match template
+     FIND ( 
+           COLLECT (
+                    'x',
+                    [ 
+                     EXPR(q{! ref}),
+                     EXPR(q{! ref})</pre>
+<pre>
+                    ]
+                    )
+           )
+    );</pre>
+<p>The pattern is basically saying: ``match an array ref consisting of 2
+elements where each element is not an reference of any sort''. Since
+the strings 'city' and 'taipei' both fulfill that criterion that is
+what matches.</p>
+<p>
+</p>
+<h3><a name="data__multivaluedhash_on_search_cpan_org">Data::MultiValuedHash on search.cpan.org</a></h3>
+<p>Transparent manipulation of single or multiply-valued Perl hash values.</p>
+<p>
+</p>
+<h3><a name="parse__recdescent__consumer">Parse::RecDescent::Consumer</a></h3>
+<p><a href="/Parse/RecDescent/Consumer.html">the Parse::RecDescent::Consumer manpage</a> makes it easy to keep track of how much
+text has been consumed through successful matches.
+</p>
+<pre>
+
+=head3 Regexp::List (part of Regexp::Optimizer)</pre>
+<p>If you have a lot of alternations, it will be more efficient to
+test a single pre-compiled, optimized regular expression than a bunch of 
+strings. And <a href="/Regexp/List.html">Regexp::List</a> is designed to help you do
+just that.</p>
+<p>
+</p>
+<h3><a name="regexp_assemble">Regexp:Assemble</a></h3>
+<p><a href="/Regexp/Assemble.html">Regexp:Assemble</a> is a similar tool to Regexp::List,
+except that instead of just providing plain strings, you can give it 
+a series of regular expressions, for it to assemble into one large
+regular expression.</p>
+<p>
+</p>
+<h3><a name="text__balanced_and_regexp__common__balanced">Text::Balanced  and Regexp::Common::balanced</a></h3>
+<p>Use this instead of writing hairy regular expressions to match certain
+common ``balanced'' forms of text, such as tags and parenthesized text.</p>
+<p>See <a href="http://perlmonks.org/index.pl?node_id=208285">http://perlmonks.org/index.pl?node_id=208285</a>
+for an example of where it would be better suited for the task than
+Parse::RecDescent.</p>
+<p>
+</p>
+<h3><a name="scalar__listify">Scalar::Listify</a></h3>
+<p>Sometimes in grammars, you are not sure if you will end up with a scalar
+match or an array of results. But you will often want to process them both 
+the same. <a href="/Scalar/Listify.html">Scalar::Listify</a> facilitates this process.</p>
 <p>
 </p>
 <h2><a name="other_parsing_engines">Other Parsing Engines</a></h2>
@@ -2353,6 +2465,11 @@ have used Lex and Yacc. Parse::RecDescent is a top-down parser.</p>
 <h3><a name="domainspecific_parsers">Domain-specific parsers</a></h3>
 <p>On CPAN there are many parsers for particular tasks such as CSV, HTML,
 XML, etc.</p>
+<p>
+</p>
+<h2><a name="a_vim_syntax_file_for_parse__recdescent">a VIM Syntax File for Parse::RecDescent</a></h2>
+<p><a href="http://perlmonks.org/?node_id=648073">http://perlmonks.org/</a> provides a VIM syntax file for
+prd.</p>
 <p>
 </p>
 <hr />

@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = '5.04';
+our $VERSION = '5.08';
 
 1;
 __END__
@@ -1482,6 +1482,14 @@ to this:
 
 =head1 PROGRAMMING TOPICS GERMANE TO Parse::RecDescent USE
 
+=head2 Getting large files into memory
+
+An issue related to PRD is how to get huge files into memory for parsing. 
+Check out this link:
+
+L<http://perlmonks.org/?node_id=636233>
+
+for some approaches to this problems.
 
 =head2 Double vs Single-quoted strings
 
@@ -1675,15 +1683,6 @@ regexps:
  http://lists.isb.sdnpk.org/pipermail/comp-list/2002-August/001156.html
 
 
-=head3  Text::Balanced  and Regexp::Common::balanced
-
-Use this instead of writing hairy regular expressions to match certain
-common "balanced" forms of text, such as tags and parenthesized text.
-
-See http://perlmonks.org/index.pl?node_id=208285
-for an example of where it would be better suited for the task than
-Parse::RecDescent.
-
 =head3 Japhy's Book on Regular Expressions
 
 Ok, so he hasn't named it yet. It's available online for free!
@@ -1793,9 +1792,6 @@ as well as some slides for a presentation:
 
 
 
-=head2 Data::MultiValuedHash on search.cpan.org
-
-Transparent manipulation of single or multiply-valued Perl hash values.
 
 =head2 Parse::Recdescent tutorial at www.perl.com
 
@@ -1822,6 +1818,122 @@ This book will aid you in complexity management for large grammars.
 =head2 http://www.PerlMonks.org and irc://efnet/perlhelp
 
 A useful site to get fast help on Perl.
+
+=head2 CPAN Modules of Potential Utility
+
+=head3 Data::Match
+
+L<Data::Match|Data::Match> is an excellent tool for parse tree foraging.
+A typical autoaction is 
+  $::RD_AUTOACTION = q { [@item] } ;
+
+which leads to deeply nested parse trees. 
+
+I first inquired about various tools for spelunking in such trees:
+  http://perlmonks.org/?node_id=646560
+
+And am very happy so far with Data::Match. Here is a sample parse tree
+from my parse:
+
+
+ $VAR1 = [
+          'simple_house',
+          [
+            'pre_simple',
+            [
+              'geoloc',
+              [
+                'geoloc_',
+                [
+                  'place',
+                  [
+                    'city',
+                    'taipei'
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            'house',
+            'house'
+          ],
+          []
+        ];
+
+Now, my goal is to get at the inner-most array in $VAR1->[1]:
+
+    [
+                    'city',
+                    'taipei'
+    ]
+
+
+And with Data::Match, I can do so in a very definitional fashion:
+
+ my $match = match
+    (
+     # The parse tree
+     $self->{parse_result}[1], 
+ 
+     # The Data::Match pattern match template
+     FIND ( 
+           COLLECT (
+                    'x',
+                    [ 
+                     EXPR(q{! ref}),
+                     EXPR(q{! ref})
+
+
+                    ]
+                    )
+           )
+    );
+
+The pattern is basically saying: "match an array ref consisting of 2
+elements where each element is not an reference of any sort". Since
+the strings 'city' and 'taipei' both fulfill that criterion that is
+what matches.
+
+=head3 Data::MultiValuedHash on search.cpan.org
+
+Transparent manipulation of single or multiply-valued Perl hash values.
+
+=head3 Parse::RecDescent::Consumer
+
+L<Parse::RecDescent::Consumer> makes it easy to keep track of how much
+text has been consumed through successful matches.
+ 
+=head3 Regexp::List (part of Regexp::Optimizer)
+
+If you have a lot of alternations, it will be more efficient to
+test a single pre-compiled, optimized regular expression than a bunch of 
+strings. And L<Regexp::List|Regexp::List> is designed to help you do
+just that.
+
+=head3 Regexp:Assemble
+
+L<Regexp:Assemble|Regexp::Assemble> is a similar tool to Regexp::List,
+except that instead of just providing plain strings, you can give it 
+a series of regular expressions, for it to assemble into one large
+regular expression.
+
+=head3  Text::Balanced  and Regexp::Common::balanced
+
+Use this instead of writing hairy regular expressions to match certain
+common "balanced" forms of text, such as tags and parenthesized text.
+
+See http://perlmonks.org/index.pl?node_id=208285
+for an example of where it would be better suited for the task than
+Parse::RecDescent.
+
+=head3 Scalar::Listify
+
+Sometimes in grammars, you are not sure if you will end up with a scalar
+match or an array of results. But you will often want to process them both 
+the same. L<Scalar::Listify|Scalar::Listify> facilitates this process.
+
+
 
 =head2 Other Parsing Engines
 
@@ -1854,6 +1966,11 @@ L<http://www.instantweb.com/D/dictionary/foldoc.cgi?perl-byacc>
 
 On CPAN there are many parsers for particular tasks such as CSV, HTML,
 XML, etc. 
+
+=head2 a VIM Syntax File for Parse::RecDescent
+
+L<http://perlmonks.org/?node_id=648073> provides a VIM syntax file for
+prd.
 
 =head1 SOURCES for FAQ MATERIAL
 
