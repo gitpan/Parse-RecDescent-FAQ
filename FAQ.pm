@@ -3,7 +3,7 @@ package Parse::RecDescent::FAQ;
 use vars qw($VERSION);
 
 
-our $VERSION = '5.08';
+our $VERSION = '6.0.a';
 
 1;
 __END__
@@ -38,7 +38,7 @@ or not.
 
 =back
 
-Also see the "Left-recursion" section under "PARSER BEHAVIOR"
+Also see the "Left-recursion" section under L<"PARSER BEHAVIOR">
 
 =head1 DEBUGGING
 
@@ -86,10 +86,6 @@ I have a question regarding subrules within grammars used with
 Parse::RecDescent - The following code best illustrates the best test
 case that I can identify which highlights my problem. 
 
-
-
-
-
 Note that with this test code, each of the lines within the __DATA__ section are tested against the grammar and the expected result, either pass or fail, is indicated by the 1 or 0 at the start of the line respectively.
 
 However, despite these expected results, the grammar does not reject
@@ -115,7 +111,20 @@ Also, your comma-separated string can be parsed simply with
 
 as shown in the P::RD examples on the manpage. 
 
-=head2 Backtracking (PRD doesn't do it)
+=head2 Floating or Substring Matches
+
+Oftentimes, you may want to find if a grammar pattern exists anywhere
+in the input string, not necessarily right from the start.
+
+In this post:
+
+L<http://www.mail-archive.com/recdescent@perl.org/msg00499.html>
+
+titled "Re: floating / backtracking - style match", Ted Zlatnov 
+provides an elegant solution to getting the job done.
+
+
+=head2 Backtracking 
 
 Take the following regex:
 
@@ -2304,131 +2313,56 @@ Ok, so he hasn't named it yet. It's available online for free!
 You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 
-=head1 Practical Parser Examples
-
-=head2 Article comparing Gene Parsing with PRD and other approaches
-
-"The Making of Entrez Gene parsers in Perl using
-Parse::RecDescent, Parse::Yapp, Perl-byacc and Regex" by
-Dr. Mingyi Liu 
-
-is available from:
-
-L<http://sourceforge.net/docman/display_doc.php?docid=27420&group_id=133629>
-
-=head2 Module dependency expression parser
-
-
-This code by Marc Prewitt was a response to 
-Mark Dominus' Perl 'Expert' Quiz of the Week #24 (Module dependency
-evaluation). This quiz of the week was a practical challenge to find
-code that could end up useable within Module::Build. The requirement
-was to allow for the module prerequisite to be specified using boolean
-logic, e.g.: 
-
-	requires => q[
-                 (DBD::Pg && DateTime::Format::Pg)
-                   ||
-                 (DBD::mysql && DateTime::Format::mysql)
-             ]
-
-If we need to, we can also include version specifications:
-
-             requires => q[
-                 ( DBD::Pg > 1.1 && DateTime::Format::Pg )
-                   ||
-                 ( DBD::mysql <= 1.2 && DateTime::Format::mysql )
-             ]
-
-The neat thing about the solution is that after coding it, Marc had
-PRD generate a parser that ran independantly from PRD itself.
-
-This solution, according to the judge, "... is
-probably the best solution to use if full expression parsing is
-desired for Module::Build."
-
-Marc's outline of his solution and link to full code is available
-here:
-
-	http://perl.plover.com/~alias/list.cgi?1:mss:2279:homdmfmmaelddeehiooi
-
-
-=head2 XSH - The XML Editing Shell
-
-XSH:
-
-L<http://xsh.sourceforge.net/>
-
-uses Parse::RecDescent
-
-=head2 Parsing Symbolic Expressions / Boolean Logic
-
-Says Stefan Mueller:
-
-Parse::RecDescent can easily parse such expressions. 
-You can find a working example grammar for more involved 
-*arithmetic* expressions in the L<Math::Symbolic::Parser> module that is 
-part of the L<Math::Symbolic> distribution. 
-It should be fairly easy to modify it to work for boolean logic. 
-
-=head2 MySql to Oracle schema conversion utility
-
-Written in Parse::RecDescent by Tim Bunce:
-
-L<http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw>
-
-
-
 =head1 RESOURCES
 
-=head2 "Some Parse::RecDescent Tutorials"
+=head2 Web Links
+
+=head3 "Some Parse::RecDescent Tutorials"
 
 L<http://perlmonks.org/?node_id=108182>
 
-=head2 Craig's Parse::Recdescent Area
+=head3 Craig's Parse::Recdescent Area
 
 Contains an article (in English)  published during the Zweiter Perl Workshop
 as well as some slides for a presentation:
 
      http://www.informatik.uni-trier.de/~smith/perl/recdescent/
     
-=head2 Hugh Myer's tips on Parse::RecDescent
+=head3 Hugh Myer's tips on Parse::RecDescent
 
     http://www.perlmonks.org/index.pl?node_id=180778
 
 17 tips you cannot do without... recently updated!
 
-
-
-
-
-=head2 Parse::Recdescent tutorial at www.perl.com
+=head3 Parse::Recdescent tutorial at www.perl.com
 
 http://www.perl.com/pub/a/2001/06/13/recdecent.html
 
-=head2 "Safe undumping"
+Yes, I see the mis-spelling, but the link works. And in the Perl community,
+we are all about pragmatism!
 
-In this Linux Magazine article by Randal Schwartz uses
+=head2 Published articles and books
+
+=head3 Parse Data::Dumper output
+
+In the Linux Magazine article "Safe undumping" by Randal Schwartz uses
 Parse::RecDescent to parse Data::Dumper output. Not fast, but quite
 complete. 
 
-=head2 "Parsing Interesting Things", SysAdminMag.COM, December 2001, Randal Schwartz
+=head3 "Parsing Interesting Things"
 
+SysAdminMag.COM, December 2001, Randal Schwartz
 
-=head2 "Data Munging with Perl" by Dave Cross
+=head3 "Data Munging with Perl" by Dave Cross
 
 Chapter 11 is focused on parsing with special emphasis on practical use of
 Parse::RecDescent.
 
-=head2 "Object-Oriented Perl" by Damian Conway
+=head3 "Object-Oriented Perl" by Damian Conway
 
 This book will aid you in complexity management for large grammars.
 
-=head2 http://www.PerlMonks.org and irc://efnet/perlhelp
-
-A useful site to get fast help on Perl.
-
-=head2 CPAN Modules of Potential Utility
+=head2 CPAN Modules of Wonderful Utility!
 
 =head3 Data::Match
 
@@ -2504,15 +2438,18 @@ elements where each element is not an reference of any sort". Since
 the strings 'city' and 'taipei' both fulfill that criterion that is
 what matches.
 
-=head3 Data::MultiValuedHash on search.cpan.org
+=head3 Data::MultiValuedHash 
 
-Transparent manipulation of single or multiply-valued Perl hash values.
+Transparent manipulation of single or multiple-valued Perl hash values.
 
 =head3 Parse::RecDescent::Consumer
 
-L<Parse::RecDescent::Consumer> makes it easy to keep track of how much
+L<Parse::RecDescent::Consumer|Parse::RecDescent::Consumer> 
+makes it easy to keep track of how much
 text has been consumed through successful matches.
- 
+
+=cut 
+
 =head3 Regexp::List (part of Regexp::Optimizer)
 
 If you have a lot of alternations, it will be more efficient to
@@ -2541,6 +2478,81 @@ Parse::RecDescent.
 Sometimes in grammars, you are not sure if you will end up with a scalar
 match or an array of results. But you will often want to process them both 
 the same. L<Scalar::Listify|Scalar::Listify> facilitates this process.
+
+=head2 Practical Parser Examples
+
+=head3 Article comparing Gene Parsing with PRD and other approaches
+
+"The Making of Entrez Gene parsers in Perl using
+Parse::RecDescent, Parse::Yapp, Perl-byacc and Regex" by
+Dr. Mingyi Liu 
+
+is available from:
+
+L<http://sourceforge.net/docman/display_doc.php?docid=27420&group_id=133629>
+
+=head3 Module dependency expression parser
+
+
+This code by Marc Prewitt was a response to 
+Mark Dominus' Perl 'Expert' Quiz of the Week #24 (Module dependency
+evaluation). This quiz of the week was a practical challenge to find
+code that could end up useable within Module::Build. The requirement
+was to allow for the module prerequisite to be specified using boolean
+logic, e.g.: 
+
+	requires => q[
+                 (DBD::Pg && DateTime::Format::Pg)
+                   ||
+                 (DBD::mysql && DateTime::Format::mysql)
+             ]
+
+If we need to, we can also include version specifications:
+
+             requires => q[
+                 ( DBD::Pg > 1.1 && DateTime::Format::Pg )
+                   ||
+                 ( DBD::mysql <= 1.2 && DateTime::Format::mysql )
+             ]
+
+The neat thing about the solution is that after coding it, Marc had
+PRD generate a parser that ran independantly from PRD itself.
+
+This solution, according to the judge, "... is
+probably the best solution to use if full expression parsing is
+desired for Module::Build."
+
+Marc's outline of his solution and link to full code is available
+here:
+
+	http://perl.plover.com/~alias/list.cgi?1:mss:2279:homdmfmmaelddeehiooi
+
+
+=head3 XSH - The XML Editing Shell
+
+XSH:
+
+L<http://xsh.sourceforge.net/>
+
+uses Parse::RecDescent
+
+=head3 Parsing Symbolic Expressions / Boolean Logic
+
+Says Stefan Mueller:
+
+Parse::RecDescent can easily parse such expressions. 
+You can find a working example grammar for more involved 
+*arithmetic* expressions in the L<Math::Symbolic::Parser> module that is 
+part of the L<Math::Symbolic> distribution. 
+It should be fairly easy to modify it to work for boolean logic. 
+
+=head3 MySql to Oracle schema conversion utility
+
+Written in Parse::RecDescent by Tim Bunce:
+
+L<http://groups.google.com/groups?q=recdescent&start=40&hl=en&scoring=d&rnum=41&selm=9km7b1%246vc%241%40FreeBSD.csie.NCTU.edu.tw>
+
+
 
 
 
@@ -2581,35 +2593,15 @@ XML, etc.
 L<http://perlmonks.org/?node_id=648073> provides a VIM syntax file for
 prd.
 
-=head1 SOURCES for FAQ MATERIAL
+=head1 APPENDIX
 
-I try to regularly scan all sources of Perl question-answer for FAQ material.
-If you can think of another source that is not listed below, I would
-appreciate knowing about it.
 
-=over 4
-
-=item * comp.lang.perl.modules
-
-=item * comp.lang.perl.moderated
-
-=item * recdescent@perl.org
-
-Conveniently available via NNTP at:
-
-     news://nntp.perl.org/perl.recdescent
-
-=item * perlmonks.org
-
-  
-
-=back
-
-=head1 AUTHOR
-
-The author of Parse::RecDescent::FAQ is Terrence Brannon <tbone@cpan.org>. 
+=head2 Author
 
 The author of Parse::RecDescent is Damian Conway. 
+
+The author of Parse::RecDescent::FAQ is Terrence Brannon <tbone@cpan.org>. 
+L<http://www.metaperl.com>
 
 The (unwitting) contributors to this FAQ
 
@@ -2635,8 +2627,31 @@ The (unwitting) contributors to this FAQ
 
 =item * Yves Orton
 
-
 =back 
+
+
+=head2 Sources for FAQ Material
+
+I try to regularly scan all sources of Perl question-answer for FAQ material.
+If you can think of another source that is not listed below, I would
+appreciate knowing about it.
+
+=over 4
+
+=item * comp.lang.perl.modules
+
+=item * comp.lang.perl.moderated
+
+=item * recdescent@perl.org
+
+Conveniently available via NNTP at:
+
+     news://nntp.perl.org/perl.recdescent
+
+=item * perlmonks.org
+
+=back
+
 
 
 =cut
