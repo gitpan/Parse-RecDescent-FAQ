@@ -1,7 +1,7 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Parse-RecDescent-FAQ
-version:      6.0.a
+version:      6.0.b
 version_from: FAQ.tt
 installdirs:  site
 requires:

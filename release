@@ -17,7 +17,11 @@ hg push
 mv FAQ.tt-out FAQ.pm
 pod2html FAQ.pm > FAQ.html
 perl Makefile.PL
+make
+make test
 rm *.tar.gz
 make tardist
 
 
+hg commit -m "`grep 'VERSION =' FAQ.tt`"
+hg push

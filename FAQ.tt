@@ -2,11 +2,12 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-
-our $VERSION = '6.0.a';
+$VERSION = '6.0.b';
 
 1;
+
 __END__
+
 
 =head1 NAME
 
@@ -597,7 +598,7 @@ So if you would like to state the test in the positive, then do this:
 =head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
 
 
-Be sure to see the example see the RESOURCES section at the end
+Be sure to see the example see the L<"RESOURCES"> section at the end
 for even more nosebleed parsing examples.
 
 =head2 Subrule matches N times, where N is parsed on the fly
