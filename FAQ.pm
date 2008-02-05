@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-$VERSION = '6.0.b';
+$VERSION = '6.0.c';
 
 1;
 
@@ -643,6 +643,20 @@ So if you would like to state the test in the positive, then do this:
    line: word '' { $thiscolumn == 22 || undef } word 
 
 =back
+
+=head1 Parsing Quotes within .... Quotes!
+
+A recent node on Perlmonks 
+L<http://perlmonks.org/?node_id=665986|http://perlmonks.org/?node_id=665986>
+had a question on how to parse:
+
+    A statement "with a quoted ';'" ;
+
+The best answer is the C<perl_quotelike> section in the offical docs for
+L<Parse::RecDescent|Parse::RecDescent>. An earlir node on Perlmonks:
+L<http://perlmonks.org/?node_id=485933|http://perlmonks.org/?node_id=485933> 
+covers the use of C<perl_quotelike> in detail.
+
 
 =head1 MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING
 
@@ -1840,7 +1854,7 @@ something interesting that I can't explain to myself.
 
 Here is my script:
 
------- Start Script ------
+
 use strict;
 use warnings;
 
@@ -1861,17 +1875,18 @@ my $parser = new Parse::RecDescent($grammar);
 my $test_string = qq{1.2.3.5.8};
 
 print join( "\n", @{ $parser -> input( $test_string ) } );
------- End Script ------
+
+
 
 This script works great. However, if I change the value of the skip
 directive so that it uses double quotes instead of single quotes:
 
-<skip: "\.*">
+    <skip: "\.*">
 
 the grammar fails to parse the input. However, if I put square
 brackets around the escaped dot:
 
-<skip: "[\.]*">
+    <skip: "[\.]*">
 
 the grammar starts working again:
 

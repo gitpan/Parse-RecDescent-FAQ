@@ -8,9 +8,6 @@ echo
 echo I hope you bumped the version number
 echo
 
-hg commit -m "`grep 'VERSION =' FAQ.tt`"
-hg push
-
 # make manifest
 
 ./tt.pl FAQ.tt

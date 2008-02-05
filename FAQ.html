@@ -84,6 +84,7 @@
 		<li><a href="#another_example">Another example</a></li>
 	</ul>
 
+	<li><a href="#parsing_quotes_within______quotes_">Parsing Quotes within .... Quotes!</a></li>
 	<li><a href="#modular___generative___creative___hairy_parsing">MODULAR / GENERATIVE / CREATIVE / HAIRY PARSING</a></li>
 	<ul>
 
@@ -792,6 +793,19 @@ and is guaranteed to make a production fail immediately.</p>
    line: word '' { $thiscolumn == 22 || undef } word</pre>
 </li>
 </ul>
+<p>
+</p>
+<hr />
+<h1><a name="parsing_quotes_within______quotes_">Parsing Quotes within .... Quotes!</a></h1>
+<p>A recent node on Perlmonks 
+<a href="http://perlmonks.org/?node_id=665986|http://perlmonks.org/?node_id=665986">http://perlmonks.org/</a>
+had a question on how to parse:</p>
+<pre>
+    A statement &quot;with a quoted ';'&quot; ;</pre>
+<p>The best answer is the <code>perl_quotelike</code> section in the offical docs for
+<a href="/Parse/RecDescent.html">Parse::RecDescent</a>. An earlir node on Perlmonks:
+<a href="http://perlmonks.org/?node_id=485933|http://perlmonks.org/?node_id=485933">http://perlmonks.org/</a> 
+covers the use of <code>perl_quotelike</code> in detail.</p>
 <p>
 </p>
 <hr />
@@ -1836,9 +1850,10 @@ Check out this link:</p>
 <p>I'm playing around with the &lt;skip:&gt; directive and I've noticed
 something interesting that I can't explain to myself.</p>
 <p>Here is my script:</p>
-<p>------ Start Script ------
+<pre>
+
 use strict;
-use warnings;</p>
+use warnings;</pre>
 <p>$::RD_TRACE = 1;</p>
 <p>use Parse::RecDescent;</p>
 <p>my $grammar = q{</p>
@@ -1849,14 +1864,16 @@ use warnings;</p>
 <p>};</p>
 <p>my $parser = new Parse::RecDescent($grammar);</p>
 <p>my $test_string = qq{1.2.3.5.8};</p>
-<p>print join( ``\n'', @{ $parser -&gt; input( $test_string ) } );
------- End Script ------</p>
+<p>print join( ``\n'', @{ $parser -&gt; input( $test_string ) } );</p>
+<p></p>
 <p>This script works great. However, if I change the value of the skip
 directive so that it uses double quotes instead of single quotes:</p>
-<p>&lt;skip: ``\.*''&gt;</p>
+<pre>
+    &lt;skip: &quot;\.*&quot;&gt;</pre>
 <p>the grammar fails to parse the input. However, if I put square
 brackets around the escaped dot:</p>
-<p>&lt;skip: ``[\.]*''&gt;</p>
+<pre>
+    &lt;skip: &quot;[\.]*&quot;&gt;</pre>
 <p>the grammar starts working again:</p>
 <p>How does this work this way?</p>
 <ul>
