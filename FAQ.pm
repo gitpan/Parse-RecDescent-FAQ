@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-$VERSION = '6.0.c';
+$VERSION = '6.0.e';
 
 1;
 
@@ -2329,6 +2329,26 @@ Ok, so he hasn't named it yet. It's available online for free!
 You still need to know when to use C</.*/> or C</.+/> or C</[^x]*/>
 
 
+=head1 Perlmonks Nodes
+
+Basically the number of posts on Perlmonks about Parse::RecDescent are
+growing faster than I have time to study them closely and categorize
+them. But it is important that you have rapid access to them instead
+of slogging through Super Search or a google site search, so here you
+go:
+
+=over 4
+
+=item * Pro teaches amateur
+
+L<http://perlmonks.org/?node_id=674283|http://perlmonks.org/?node_id=674283>
+
+Perlmonk Ikegami gives a wonderful set of best practices for
+Recdescent usage.
+
+
+=back
+
 =head1 RESOURCES
 
 =head2 Web Links
@@ -2496,6 +2516,23 @@ match or an array of results. But you will often want to process them both
 the same. L<Scalar::Listify|Scalar::Listify> facilitates this process.
 
 =head2 Practical Parser Examples
+
+=head3 DBFeeder / Data::Generate - database test data generation tool
+
+L<http://dbfeeder.sourceforge.net/|http://dbfeeder.sourceforge.net/>
+is a a powerful data generation tool. Internally, it uses
+L<Data::Generate|Data::Generate> to parse "inverted regular expressions" 
+using Parse::RecDescent.
+
+
+=head4 Tangential new directions
+
+In a recent perlmonks thread:
+L<http://perlmonks.org/?node_id=672163|http://perlmonks.org/?node_id=672163> 
+the author of DBFeeder (Davide Conti) discusses SQL parsing with 
+Parse::RecDescent (among other tools). This technology is not currently
+a part of DBFeeder and Data::Generate, but an avenue he is exploring.
+
 
 =head3 Article comparing Gene Parsing with PRD and other approaches
 

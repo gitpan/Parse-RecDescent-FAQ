@@ -181,6 +181,7 @@
 
 	</ul>
 
+	<li><a href="#perlmonks_nodes">Perlmonks Nodes</a></li>
 	<li><a href="#resources">RESOURCES</a></li>
 	<ul>
 
@@ -215,6 +216,12 @@
 
 		<li><a href="#practical_parser_examples">Practical Parser Examples</a></li>
 		<ul>
+
+			<li><a href="#dbfeeder___data__generate__database_test_data_generation_tool">DBFeeder / Data::Generate - database test data generation tool</a></li>
+			<ul>
+
+				<li><a href="#tangential_new_directions">Tangential new directions</a></li>
+			</ul>
 
 			<li><a href="#article_comparing_gene_parsing_with_prd_and_other_approaches">Article comparing Gene Parsing with PRD and other approaches</a></li>
 			<li><a href="#module_dependency_expression_parser">Module dependency expression parser</a></li>
@@ -2264,6 +2271,23 @@ regexps:</a></h3>
 <p>
 </p>
 <hr />
+<h1><a name="perlmonks_nodes">Perlmonks Nodes</a></h1>
+<p>Basically the number of posts on Perlmonks about Parse::RecDescent are
+growing faster than I have time to study them closely and categorize
+them. But it is important that you have rapid access to them instead
+of slogging through Super Search or a google site search, so here you
+go:</p>
+<ul>
+<li><strong><a name="item_pro_teaches_amateur">Pro teaches amateur</a></strong>
+
+<p><a href="http://perlmonks.org/?node_id=674283|http://perlmonks.org/?node_id=674283">http://perlmonks.org/</a></p>
+<p>Perlmonk Ikegami gives a wonderful set of best practices for
+Recdescent usage.</p>
+</li>
+</ul>
+<p>
+</p>
+<hr />
 <h1><a name="resources">RESOURCES</a></h1>
 <p>
 </p>
@@ -2421,6 +2445,21 @@ the same. <a href="/Scalar/Listify.html">Scalar::Listify</a> facilitates this pr
 <p>
 </p>
 <h2><a name="practical_parser_examples">Practical Parser Examples</a></h2>
+<p>
+</p>
+<h3><a name="dbfeeder___data__generate__database_test_data_generation_tool">DBFeeder / Data::Generate - database test data generation tool</a></h3>
+<p><a href="http://dbfeeder.sourceforge.net/|http://dbfeeder.sourceforge.net/">http://dbfeeder.sourceforge.net/|http://dbfeeder.sourceforge.net/</a>
+is a a powerful data generation tool. Internally, it uses
+<a href="/Data/Generate.html">Data::Generate</a> to parse ``inverted regular expressions'' 
+using Parse::RecDescent.</p>
+<p>
+</p>
+<h4><a name="tangential_new_directions">Tangential new directions</a></h4>
+<p>In a recent perlmonks thread:
+<a href="http://perlmonks.org/?node_id=672163|http://perlmonks.org/?node_id=672163">http://perlmonks.org/</a> 
+the author of DBFeeder (Davide Conti) discusses SQL parsing with 
+Parse::RecDescent (among other tools). This technology is not currently
+a part of DBFeeder and Data::Generate, but an avenue he is exploring.</p>
 <p>
 </p>
 <h3><a name="article_comparing_gene_parsing_with_prd_and_other_approaches">Article comparing Gene Parsing with PRD and other approaches</a></h3>
