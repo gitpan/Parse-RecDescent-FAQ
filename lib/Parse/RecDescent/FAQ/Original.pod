@@ -2,7 +2,7 @@ package Parse::RecDescent::FAQ;
 
 use vars qw($VERSION);
 
-$VERSION = '6.0.i';
+$VERSION = '6.0.j';
 
 1;
 
@@ -17,29 +17,144 @@ Parse::RecDescent::FAQ - the official, authorized FAQ for Parse::RecDescent.
 
 =head2 Is Parse::RecDescent LL(1)? LL(N)? LR(1)? LR(N)?
 
+The best answer to this question is this thread:
+L<http://www.mail-archive.com/recdescent@perl.org/msg00143.html>
+
+Bu also see the "Left-recursion" section under L<"PARSER BEHAVIOR">
+
+    I have a data structure which is
+    
+    a hash of entries
+    where
+    an entry is a list/array of sets
+    
+    I have also a grammar that can parse the syntax of the text files that
+    contain the data I want to fill this structure with. Until here
+    everything is ok.
+    
+    Problem: I cannot figure out how to actually FILL the parsed data into
+    the structure. I can only decide if a string is grammatically correct
+    or not.
+    
+
+
 =over 4
 
 =item Answer by Yves Orton:
 
-I have a data structure which is
-
-a hash of entries
-where
-an entry is a list/array of sets
-
-I have also a grammar that can parse the syntax of the text files that
-contain the data I want to fill this structure with. Until here
-everything is ok.
-
-Problem: I cannot figure out how to actually FILL the parsed data into
-the structure. I can only decide if a string is grammatically correct
-or not.
-
-
+    
+    
+    { sub consumer {
+             my $text = shift;
+             my $closure = sub { substr $text, 0, length($text) - 
+    length($_[0]) }
+    } }
+    
+    start : entry(s) { $::res }
+    
+    entry :
+               comment
+             | def
+             | <error>
+    
+    def : <rulevar: local $p_cons>
+    def : <rulevar: local $p_text>
+    
+    # The // skips initial whitespace so it won't end up in $p_text
+    
+    def :
+         // { $p_cons = consumer($text) } phrase { $p_text = 
+    $p_cons->($text) }
+         '=' meanings ';'
+         { $::res->{$p_text} = $item{meanings} }
+    
+    comment : /#.*(?=\n)/m
+    
+    phrase  : ident(s)
+    
+    ident   : /[\w&\.'-]+/
+    
+    meanings : meaning(s /:/)
+    
+    meaning : <rulevar: local $m_cons>
+    meaning : // { $m_cons = consumer($text) } element(s /,?/) 
+    { $m_cons->($text) }
+    
+    element : alternation(s /\|/)
+    
+    alternation : expr(s /[+>]/)
+    
+    expr : /!?/ term
+    
+    term : ident '(' meaning ')' | ident
 
 =back
 
-Also see the "Left-recursion" section under L<"PARSER BEHAVIOR">
+=head1 GOTCHAS!
+
+=head2 all I did was add an action!
+
+It may seem like a trivial thing to add a print action to the end of a rule, but that can 
+cause problems.
+
+From L<http://www.perlmonks.org/index.pl?node_id=818549> we read:
+
+ My code quit working when I added
+ 
+   {print "Character: $item[1]\n"}
+ 
+ to the end of the C<character> rule in the grammer below... any idea why?
+ 
+ 
+ use strict;
+ use warnings;
+ 
+ use Parse::RecDescent;
+ 
+ my $grammar = q {
+   
+   start    :  character character character(s)
+               {print "Found: ", $item[1], $item[2], join "", @{$item[3]}, "\n"; }
+ 
+   character:  /\w/ {print "Character: $item[1]\n"}
+ };
+ 
+ my $parser = Parse::RecDescent->new($grammar);
+ 
+ defined $parser->start("ABCD") or die "didn't match";
+
+
+=over 4
+
+=item Answer by ikegami
+
+    My code quit working when I added
+    
+      {print "Character: $item[1]\n"}
+    
+    to the end of the C<character> rule in the grammer below... any idea why?
+    
+    
+    use strict;
+    use warnings;
+    
+    use Parse::RecDescent;
+    
+    my $grammar = q {
+      
+      start    :  character character character(s)
+                  {print "Found: ", $item[1], $item[2], join "", @{$item[3]}, "\n"; }
+    
+      character:  /\w/ {print "Character: $item[1]\n"}
+    };
+    
+    my $parser = Parse::RecDescent->new($grammar);
+    
+    defined $parser->start("ABCD") or die "didn't match";
+
+
+=cut
+
 
 =head1 DEBUGGING
 
@@ -50,7 +165,7 @@ Also see the "Left-recursion" section under L<"PARSER BEHAVIOR">
 Paraphrased from Yves Orton:
 
 To understand more about why your parser is not behaving as it should
-take advantage of the follow variables:
+take advantage of the following variables:
 
    $::RD_ERRORS       # unless undefined, report fatal errors
    $::RD_WARN         # unless undefined, also report non-fatal problems
@@ -96,37 +211,6 @@ name of the offending rule).
 
 
 =head1 PARSER BEHAVIOR
-
-=head2 Insuring a top-level rule match
-
-I have a question regarding subrules within grammars used with
-Parse::RecDescent - The following code best illustrates the best test
-case that I can identify which highlights my problem. 
-
-Note that with this test code, each of the lines within the __DATA__ section are tested against the grammar and the expected result, either pass or fail, is indicated by the 1 or 0 at the start of the line respectively.
-
-However, despite these expected results, the grammar does not reject
-the lines arg1, and arg1,arg2,, which ideally should be rejected due
-to the incomplete match of the subrule (comma element) - In these
-cases, a trace shows that the subrule terminal comma is matched and
-consumed, despite the entire subrule, consisting of comma and element,
-not being matched. I am sure this is a relatively straight-forward
-oversight within the grammar on my part, but I am at a loss as to how
-to correct this.  
-
-Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18, <F> line 14.''
-
-=head3 Answer by Randal L. Schwartz
-
-It's matching a portion of the string, which is legal unless you also
-anchor the end of the pattern. I typically use C</\z/> at the end of my
-top-level pattern.  
-
-Also, your comma-separated string can be parsed simply with 
-
- argument: element(s /,/)
-
-as shown in the P::RD examples on the manpage. 
 
 =head2 Floating or Substring Matches
 
@@ -523,14 +607,20 @@ Try this instead:
 
 =head3  Example In a line-delimited grammar
 
- I want to use Parse::RecDescent to parse a certain assembly language. In assembly, data is "line oriented", that is newline is the statement separator. Simplified demonstration:
+ I want to use Parse::RecDescent to parse a certain assembly
+ language. In assembly, data is "line oriented", that is newline is the
+ statement separator. Simplified demonstration: 
  
  command1 arg1 \n
  command2 arg2 \n
  
- Defines two statements. More than one statement on a line is illegal, a statement broken to two lines is also illegal.
+ Defines two statements. More than one statement on a line is illegal,
+ a statement broken to two lines is also illegal. 
  
- Now, P::RD has an issue with newlines. It swallows them by default. There is a workaround using the "skip" directive, but it became tedious and my grammar code is full of <skip: qr/ \t*/> directives.
+ Now, P::RD has an issue with newlines. It swallows them by
+ default. There is a workaround using the "skip" directive, but it
+ became tedious and my grammar code is full of <skip: qr/ \t*/>
+ directives. 
  
  Is there an easier way ?
  
@@ -659,14 +749,14 @@ So if you would like to state the test in the positive, then do this:
 =head1 Parsing Quotes within .... Quotes!
 
 A recent node on Perlmonks 
-L<http://perlmonks.org/?node_id=665986|http://perlmonks.org/?node_id=665986>
+L<http://perlmonks.org/?node_id=665986>
 had a question on how to parse:
 
     A statement "with a quoted ';'" ;
 
 The best answer is the C<perl_quotelike> section in the offical docs for
-L<Parse::RecDescent|Parse::RecDescent>. An earlir node on Perlmonks:
-L<http://perlmonks.org/?node_id=485933|http://perlmonks.org/?node_id=485933> 
+L<Parse::RecDescent|Parse::RecDescent>. An earlier node on Perlmonks:
+L<http://perlmonks.org/?node_id=485933> 
 covers the use of C<perl_quotelike> in detail.
 
 
@@ -830,20 +920,20 @@ Can I do this?
 
 =head2 Incremental generation of data structure representing parse
 
-I have a data structure which is
-
-a hash of entries
-where
-an entry is a list/array of sets
-
-I have also a grammar that can parse the syntax of the text files that
-contain the data I want to fill this structure with. Until here
-everything is ok.
-
-Problem: I cannot figure out how to actually FILL the parsed data into
-the structure. I can only decide if a string is grammatically correct
-or not.
-
+    I have a data structure which is
+    
+    a hash of entries
+    where
+    an entry is a list/array of sets
+    
+    I have also a grammar that can parse the syntax of the text files that
+    contain the data I want to fill this structure with. Until here
+    everything is ok.
+    
+    Problem: I cannot figure out how to actually FILL the parsed data into
+    the structure. I can only decide if a string is grammatically correct
+    or not.
+    
 
 
 =over 4
@@ -1537,22 +1627,22 @@ Parse::RecDescent works with a variable C<$return> to give back results from sub
 
 =head2 Matching line continuation characters
 
-I need to parse a grammar that includes line continuation
-characters.  For example:
-
- // COMMAND ARG1-VALUE,ARG2-VALUE, +
-    ARG3-VALUE,ARG4-VALUE, +
-    EVEN-MORE-ARGS
- // ANOTHERCOMMAND
- * and a comment
- * or two
-
-How do I formulate a rule (or rules) to treat the first command
-as if all 5 arguments were specified on a single line?  I need to
-skip over the /\s*+\n\s*/ sequence.  It seems like skip or resync
-should do this for me, but if so, I haven't discovered the
-correct technique, yet.
-
+    I need to parse a grammar that includes line continuation
+    characters.  For example:
+    
+     // COMMAND ARG1-VALUE,ARG2-VALUE, +
+        ARG3-VALUE,ARG4-VALUE, +
+        EVEN-MORE-ARGS
+     // ANOTHERCOMMAND
+     * and a comment
+     * or two
+    
+    How do I formulate a rule (or rules) to treat the first command
+    as if all 5 arguments were specified on a single line?  I need to
+    skip over the /\s*+\n\s*/ sequence.  It seems like skip or resync
+    should do this for me, but if so, I haven't discovered the
+    correct technique, yet.
+    
 
 
 =over 4
@@ -1666,61 +1756,61 @@ it?
 =over 4
 =item * Answer by FAQ author
 
-Use a scored grammar. For example, this scoring directive
-
- opcode: /$match_text1/  <score: { length join '' @item}>
- opcode: /$match_text2/  <score: { length join '' @item}>
- opcode: /$match_text3/  <score: { length join '' @item}>
-
-would return the opcode with the longest length, as opposed to which
-one matched first.
-
-Just look for the section "Scored productions" in the .pod
-documentation. 
+    Use a scored grammar. For example, this scoring directive
+    
+     opcode: /$match_text1/  <score: { length join '' @item}>
+     opcode: /$match_text2/  <score: { length join '' @item}>
+     opcode: /$match_text3/  <score: { length join '' @item}>
+    
+    would return the opcode with the longest length, as opposed to which
+    one matched first.
+    
+    Just look for the section "Scored productions" in the .pod
+    documentation. 
 
 
 =back
 
 =head2 I'm having problems with the inter-token separator:
 
- my $parse = Parse::RecDescent->new(<<'EndGrammar');
-
- rebol   : block  { dump_item('block', \@item)  }
-         | scalar { dump_item('scalar', \@item) }
-
- block       : '[' block_stuff(s?) ']'
- block_stuff : scalar
- scalar      : <skip:''> '%' file
- file        : /w+/
-
- EndGrammar
-
-My grammar matches a filename, ie: 
-
- %reb.html
-
-just fine. However, it does not match a filename within a block, ie: 
-
- [ %reb.html ]
-
-and I know exactly why after tracing the grammar. 
-
-It is trying the 
-
- <skip:''> '%' file
-
-production with the input text 
-
- " %reb.html"
-
-note the space in the input text. 
-
-The reason this distresses me is that I have not changed the universal token 
-separator from 
-
- /\s*/
-
-Yet it did not gobble up the white space between the '[' terminal and the <skip:''>'%' file production
+     my $parse = Parse::RecDescent->new(<<'EndGrammar');
+    
+     rebol   : block  { dump_item('block', \@item)  }
+             | scalar { dump_item('scalar', \@item) }
+    
+     block       : '[' block_stuff(s?) ']'
+     block_stuff : scalar
+     scalar      : <skip:''> '%' file
+     file        : /w+/
+    
+     EndGrammar
+    
+    My grammar matches a filename, ie: 
+    
+     %reb.html
+    
+    just fine. However, it does not match a filename within a block, ie: 
+    
+     [ %reb.html ]
+    
+    and I know exactly why after tracing the grammar. 
+    
+    It is trying the 
+    
+     <skip:''> '%' file
+    
+    production with the input text 
+    
+     " %reb.html"
+    
+    note the space in the input text. 
+    
+    The reason this distresses me is that I have not changed the universal token 
+    separator from 
+    
+     /\s*/
+    
+    Yet it did not gobble up the white space between the '[' terminal and the <skip:''>'%' file production
 
 
 =over 4
@@ -1877,7 +1967,29 @@ something interesting that I can't explain to myself.
 
 Here is my script:
 
-Program fragment delivered error ``couldnt open file : No such file or directory at ./tt.pl line 18, <F> line 332.''
+    
+     use strict;
+     use warnings;
+     
+     $::RD_TRACE = 1;
+     
+     use Parse::RecDescent;
+     
+     my $grammar = q{
+     
+        input:  number(s) { $return = $item{ number } } | <error>
+     
+        number: <skip: '\.*'> /\d+/ 
+     
+     };
+    
+     my $parser = new Parse::RecDescent($grammar);
+     
+     my $test_string = qq{1.2.3.5.8};
+    
+     print join( "\n", @{ $parser -> input( $test_string ) } );
+    
+
 
 This script works great. However, if I change the value of the skip
 directive so that it uses double quotes instead of single quotes:
@@ -1923,41 +2035,41 @@ which is a literal dot.
 
 =head2 Tracking text parsed between phases of the parse
 
-
-I wanted to know, after matching a rule, what text the rule matched.
-So I used two variables to remember what the remaining text and
-offset were before and after the rule and just determined the
-difference.
-
-   report : <rulevar: local $rule_text>
-   report : <rulevar: local $rule_offset>
-
-   report :
-             {
-                 $rule_text   = $text;
-                 $rule_offset = $thisoffset;
-             }
-
-         ...some subrules...
-
-             {
-                 my $str = substr($rule_text, 0, $thisoffset - 
-$rule_offset);
-
-                 # remove all sorts of whitespace
-
-                 $str =~ s/^\s*//s;
-                 $str =~ s/\s*$//s;
-                 $str =~ s/\s+/ /gs;
-
-                 # Now $str contains the text matched by this rule
-             }
-
-This is the kind of thing I thought would have been possible a lot
-easier. Did I miss something?
-
-If not, is there a way to make this available in every parser,
-e.g. by providing a new directive or something like that?
+    
+    I wanted to know, after matching a rule, what text the rule matched.
+    So I used two variables to remember what the remaining text and
+    offset were before and after the rule and just determined the
+    difference.
+    
+       report : <rulevar: local $rule_text>
+       report : <rulevar: local $rule_offset>
+    
+       report :
+                 {
+                     $rule_text   = $text;
+                     $rule_offset = $thisoffset;
+                 }
+    
+             ...some subrules...
+    
+                 {
+                     my $str = substr($rule_text, 0, $thisoffset - 
+    $rule_offset);
+    
+                     # remove all sorts of whitespace
+    
+                     $str =~ s/^\s*//s;
+                     $str =~ s/\s*$//s;
+                     $str =~ s/\s+/ /gs;
+    
+                     # Now $str contains the text matched by this rule
+                 }
+    
+    This is the kind of thing I thought would have been possible a lot
+    easier. Did I miss something?
+    
+    If not, is there a way to make this available in every parser,
+    e.g. by providing a new directive or something like that?
 
 =over 4
 
@@ -1989,196 +2101,196 @@ list of string.
 
 =head3 A tutorial written by Philip Newton <nospam.newton@gmx.li>
 
-Start off with an array of (references to) arrays: 
-
-    @array = ( [1,2,3], ['a', 'u', 'B', 'Q', 'M'], ['%'] );
-
-
-Now a shallow copy looks like this: 
-
-    @shallow = ( $array[0], $array[1], $array[2] );
-
-
-This copies the references over from @array to @shallow. Now @shallow
-is ( [1,2,3], ['a', 'u', 'B', 'Q', 'M'], ['%'] ) -- the same as
-@array. But there's only one 2 and one 'Q', since there are two
-references pointing to the same place.  
-
-Here's what it looks like in the debugger: 
-
-  DB<5> x \@array
- 0  ARRAY(0x10e5560)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'B'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-  DB<6> x \@shallow
- 0  ARRAY(0xcaef60)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'B'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-
-
-You can see that @array lives somewhere around 0x10e5560, whereas
-@shallow lives around 0xcaef60, but the three references point to
-arrays in the same place. If I now change $array[1][2] to 'C', watch
-what happens:  
-
-  DB<7> $array[1][2] = 'C'
-
-
-  DB<8> x \@array
- 0  ARRAY(0x10e5560)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-  DB<9> x \@shallow
- 0  ARRAY(0xcaef60)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-
-$shallow[1][2] is now also 'C'! This is because it just followed the
-pointer to the array at 0x10e5638 and found the modified data there.  
-
-Now see what happens when I do a copy that's one level deeper -- not
-just copying the references but the data behind the references:  
-
- @deep = ( [ @{$array[0]} ], [ @{$array[1]} ], [ @{$array[2]} ] );
-
-This uses the knowledge that @array[0..2] are all references to
-arrays, and it only goes one level deeper. A more general algorithm
-(such as Storable's dclone, mentioned in `perldoc -q copy`) would do a
-walk and copy differently depending on the type of reference it
-encounters at each stage.  
-
-Now watch: 
-
-  DB<12> x \@array
- 0  ARRAY(0x10e5560)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-  DB<13> x \@deep
- 0  ARRAY(0x10ef89c)
-   0  ARRAY(0x10eb298)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10eb2c4)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10ef07c)
-      0  '%'
-
-
-The references point to different places. 
-
-Now if you change @array, @deep doesn't change: 
-
-  DB<14> push @{$array[2]}, '$'
-
-
-  DB<15> x \@array
- 0  ARRAY(0x10e5560)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-      1  '$'
-  DB<16> x \@shallow
- 0  ARRAY(0xcaef60)
-   0  ARRAY(0x10e5464)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10e5638)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10e568c)
-      0  '%'
-      1  '$'
-  DB<17> x \@deep
- 0  ARRAY(0x10ef89c)
-   0  ARRAY(0x10eb298)
-      0  1
-      1  2
-      2  3
-   1  ARRAY(0x10eb2c4)
-      0  'a'
-      1  'u'
-      2  'C'
-      3  'Q'
-      4  'M'
-   2  ARRAY(0x10ef07c)
-      0  '%'
-
-
-@deep didn't change, since it's got its own value of the anonymous
-array containing '%', but @shallow did.  
-
-Hope this helps a bit. 
-
-Cheers, Philip -- Philip Newton <nospam.newton@gmx.li> 
-If you're not part of the solution, you're part of the precipitate
+    Start off with an array of (references to) arrays: 
+    
+        @array = ( [1,2,3], ['a', 'u', 'B', 'Q', 'M'], ['%'] );
+    
+    
+    Now a shallow copy looks like this: 
+    
+        @shallow = ( $array[0], $array[1], $array[2] );
+    
+    
+    This copies the references over from @array to @shallow. Now @shallow
+    is ( [1,2,3], ['a', 'u', 'B', 'Q', 'M'], ['%'] ) -- the same as
+    @array. But there's only one 2 and one 'Q', since there are two
+    references pointing to the same place.  
+    
+    Here's what it looks like in the debugger: 
+    
+      DB<5> x \@array
+     0  ARRAY(0x10e5560)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'B'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+      DB<6> x \@shallow
+     0  ARRAY(0xcaef60)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'B'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+    
+    
+    You can see that @array lives somewhere around 0x10e5560, whereas
+    @shallow lives around 0xcaef60, but the three references point to
+    arrays in the same place. If I now change $array[1][2] to 'C', watch
+    what happens:  
+    
+      DB<7> $array[1][2] = 'C'
+    
+    
+      DB<8> x \@array
+     0  ARRAY(0x10e5560)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+      DB<9> x \@shallow
+     0  ARRAY(0xcaef60)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+    
+    $shallow[1][2] is now also 'C'! This is because it just followed the
+    pointer to the array at 0x10e5638 and found the modified data there.  
+    
+    Now see what happens when I do a copy that's one level deeper -- not
+    just copying the references but the data behind the references:  
+    
+     @deep = ( [ @{$array[0]} ], [ @{$array[1]} ], [ @{$array[2]} ] );
+    
+    This uses the knowledge that @array[0..2] are all references to
+    arrays, and it only goes one level deeper. A more general algorithm
+    (such as Storable's dclone, mentioned in `perldoc -q copy`) would do a
+    walk and copy differently depending on the type of reference it
+    encounters at each stage.  
+    
+    Now watch: 
+    
+      DB<12> x \@array
+     0  ARRAY(0x10e5560)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+      DB<13> x \@deep
+     0  ARRAY(0x10ef89c)
+       0  ARRAY(0x10eb298)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10eb2c4)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10ef07c)
+          0  '%'
+    
+    
+    The references point to different places. 
+    
+    Now if you change @array, @deep doesn't change: 
+    
+      DB<14> push @{$array[2]}, '$'
+    
+    
+      DB<15> x \@array
+     0  ARRAY(0x10e5560)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+          1  '$'
+      DB<16> x \@shallow
+     0  ARRAY(0xcaef60)
+       0  ARRAY(0x10e5464)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10e5638)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10e568c)
+          0  '%'
+          1  '$'
+      DB<17> x \@deep
+     0  ARRAY(0x10ef89c)
+       0  ARRAY(0x10eb298)
+          0  1
+          1  2
+          2  3
+       1  ARRAY(0x10eb2c4)
+          0  'a'
+          1  'u'
+          2  'C'
+          3  'Q'
+          4  'M'
+       2  ARRAY(0x10ef07c)
+          0  '%'
+    
+    
+    @deep didn't change, since it's got its own value of the anonymous
+    array containing '%', but @shallow did.  
+    
+    Hope this helps a bit. 
+    
+    Cheers, Philip -- Philip Newton <nospam.newton@gmx.li> 
+    If you're not part of the solution, you're part of the precipitate
 
 =head2 Apparent, but not really deep copying:  my (@list) = @{[@{$_[0]}]};
 
@@ -2206,61 +2318,61 @@ purpose of this. Working from inner to outer:
 =over 4
 =item * Matthew Wickerline says
 
-
-The line from demo_calc.pl is in
-fact not doing any deep copying.
-
-
-    #!/usr/bin/perl -w
-    my @original = (
-        [0],  [1,2,3],  [4,5,6],  [7,8,9]
-    );
-    my @copy = &some_kind_of_copy( \@original );
-    sub some_kind_of _copy {
-        # here's that line from demo_calc.pl
-        my (@list) = @{[@{$_[0]}]};
-        return @list;
-    }
-
- $original[0][0]         = 'zero';
- @{ $original[1] }[0..2] = qw(one   two   three);
- @{ $original[2] }[0..2] = qw(four  five  six);
- @{ $original[3] }[0..2] = qw(seven eight nine);
-    # now use the debugger to look at the addresses,
-    # or use Data::Dumper to look at @copy, or just
-    # compare one of the items...
- if (  $copy[1][2] eq 'three'  ) {
-    print "Shallow Copy\n";
- } elsif (  $copy[1][2] == 3  ) {
-    print "Deep Copy\n";
- } else {
-        print "This should never happen!!!\n"
-	}
-
-
-If you wanted that line to do deep copying of a list of anon arrays,
-then the line should read
-
-    my @list = map  { [@$_] }  @{$_[0]};
-               # turn $_[0] into a list (of arrayrefs)
-               # turn each (arrayref) element of that list
-               # into an anonymous array containing
-               # a list found by derefrencing the arrarref
-
-Try plugging that line into above script instead of the line from the
-demo_calc.pl and you'll see different output. The line from demo_calc.pl
-is in fact doing extra useless work. My guess is that the extra
-    @{[    ]}
-around there is one of two things:
-    1) a momentary lapse of attention
-       resulting in a copy/paste error, or duplicate typing
- or
-    2) an artifact of earlier code wherein something extra was
-       going on in there and has since been deleted.
-
-Even Damian can make a mistake, but it's not a mistake that affects
-output... it just makes for a tiny bit of wasted work (or maybe Perl is
-smart enough to optimze away the wasted work, I dunno).
+    
+    The line from demo_calc.pl is in
+    fact not doing any deep copying.
+    
+    
+        #!/usr/bin/perl -w
+        my @original = (
+            [0],  [1,2,3],  [4,5,6],  [7,8,9]
+        );
+        my @copy = &some_kind_of_copy( \@original );
+        sub some_kind_of _copy {
+            # here's that line from demo_calc.pl
+            my (@list) = @{[@{$_[0]}]};
+            return @list;
+        }
+    
+     $original[0][0]         = 'zero';
+     @{ $original[1] }[0..2] = qw(one   two   three);
+     @{ $original[2] }[0..2] = qw(four  five  six);
+     @{ $original[3] }[0..2] = qw(seven eight nine);
+        # now use the debugger to look at the addresses,
+        # or use Data::Dumper to look at @copy, or just
+        # compare one of the items...
+     if (  $copy[1][2] eq 'three'  ) {
+        print "Shallow Copy\n";
+     } elsif (  $copy[1][2] == 3  ) {
+        print "Deep Copy\n";
+     } else {
+            print "This should never happen!!!\n"
+    	}
+    
+    
+    If you wanted that line to do deep copying of a list of anon arrays,
+    then the line should read
+    
+        my @list = map  { [@$_] }  @{$_[0]};
+                   # turn $_[0] into a list (of arrayrefs)
+                   # turn each (arrayref) element of that list
+                   # into an anonymous array containing
+                   # a list found by derefrencing the arrarref
+    
+    Try plugging that line into above script instead of the line from the
+    demo_calc.pl and you'll see different output. The line from demo_calc.pl
+    is in fact doing extra useless work. My guess is that the extra
+        @{[    ]}
+    around there is one of two things:
+        1) a momentary lapse of attention
+           resulting in a copy/paste error, or duplicate typing
+     or
+        2) an artifact of earlier code wherein something extra was
+           going on in there and has since been deleted.
+    
+    Even Damian can make a mistake, but it's not a mistake that affects
+    output... it just makes for a tiny bit of wasted work (or maybe Perl is
+    smart enough to optimze away the wasted work, I dunno).
 
 
 =item * Damian Conway says:
@@ -2698,15 +2810,13 @@ appreciate knowing about it.
 
 =item * recdescent@perl.org
 
-Conveniently available via NNTP at:
-
-     news://nntp.perl.org/perl.recdescent
+L<http://lists.perl.org/list/recdescent.html>
 
 =item * perlmonks.org
 
 =back
 
-=head1 FAQ repo
+=head1 Source Repository for this FAQ
 
 L<http://github.com/metaperl/Parse--RecDescent--FAQ/tree/master>
 
